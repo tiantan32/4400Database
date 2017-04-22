@@ -5,6 +5,11 @@
  */
 package GUI1;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.Statement;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author Yang-mac
@@ -79,13 +84,6 @@ public class View_POIs extends javax.swing.JFrame {
         });
         jTable1.getTableHeader().setReorderingAllowed(false);
         jScrollPane1.setViewportView(jTable1);
-        if (jTable1.getColumnModel().getColumnCount() > 0) {
-            jTable1.getColumnModel().getColumn(0).setHeaderValue("Location Name");
-            jTable1.getColumnModel().getColumn(1).setHeaderValue("City");
-            jTable1.getColumnModel().getColumn(2).setHeaderValue("Zip code");
-            jTable1.getColumnModel().getColumn(3).setHeaderValue("Flagged?");
-            jTable1.getColumnModel().getColumn(4).setHeaderValue("Date Flagged");
-        }
 
         jButton1.setText("Back");
 
@@ -236,6 +234,28 @@ public class View_POIs extends javax.swing.JFrame {
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         // TODO add your handling code here:
+        String poilocation = jComboBox1.getSelectedItem().toString();
+        String city = jComboBox3.getSelectedItem().toString();
+        String state = jComboBox2.getSelectedItem().toString();
+        int zipcode = Integer.parseInt(jTextField1.getText());
+        String flagged = jCheckBox1.getText();        
+        System.out.println(flagged);
+        try {
+            Connection conn = null;
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/javabase",  "root", "123");
+            System.out.println(conn.toString());
+            Statement stmt = conn.createStatement();
+//            String sql = "INSERT INTO USER VALUES('"+poilocation+"','"+date+"','"+datatype+"','"+datavalue+"');";
+            String sql = "SELECT * FROM POI WHERE Location=poilocation OR City=city OR State=state;";
+            System.out.println("query: " + sql );
+            stmt.executeUpdate(sql);                       
+            conn.close();
+            } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this,"Error in connectivity" );
+        }  
+        
+      
+       
     }//GEN-LAST:event_jButton3ActionPerformed
 
     /**

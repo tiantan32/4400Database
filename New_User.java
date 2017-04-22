@@ -298,7 +298,7 @@ public class New_User extends javax.swing.JFrame {
             String sql = "INSERT INTO USER VALUES('"+username+"','"+Email+"','"+password+"','"+usertype+"');";
             System.out.println("query: " + sql );
             stmt.executeUpdate(sql);                       
-            if (usertype.equals("City Officials")){
+            if (usertype.equals("CityOfficials")){
                 String city = jComboBox2.getSelectedItem().toString();
                 String state = jComboBox3.getSelectedItem().toString();
                 String title = jTextField3.getText();

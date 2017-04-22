@@ -5,6 +5,14 @@
  */
 package GUI1;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.sql.Timestamp;
+import java.util.Date;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author Yang-mac
@@ -59,8 +67,18 @@ public class New_location extends javax.swing.JFrame {
         jLabel5.setText("Zip Code:");
 
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jComboBox1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBox1ActionPerformed(evt);
+            }
+        });
 
         jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Alabama ", "Alaska ", "Arizona ", "Arkansas ", "California ", "Colorado ", "Connecticut ", "Delaware ", "Florida ", "Georgia ", "Hawaii ", "Idaho ", "Illinois Indiana ", "Iowa ", "Kansas ", "Kentucky ", "Louisiana ", "Maine ", "Maryland ", "Massachusetts ", "Michigan ", "Minnesota ", "Mississippi ", "Missouri ", "Montana Nebraska ", "Nevada ", "New Hampshire ", "New Jersey ", "New Mexico ", "New York ", "North Carolina ", "North Dakota ", "Ohio ", "Oklahoma ", "Oregon ", "Pennsylvania Rhode Island ", "South Carolina ", "South Dakota ", "Tennessee ", "Texas ", "Utah ", "Vermont ", "Virginia ", "Washington ", "West Virginia ", "Wisconsin ", "Wyoming", " " }));
+        jComboBox2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBox2ActionPerformed(evt);
+            }
+        });
 
         jTextField2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -71,6 +89,11 @@ public class New_location extends javax.swing.JFrame {
         jButton1.setText("Back");
 
         jButton2.setText("Submit");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -140,6 +163,45 @@ public class New_location extends javax.swing.JFrame {
     private void jTextField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField2ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField2ActionPerformed
+
+    private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jComboBox1ActionPerformed
+
+    private void jComboBox2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox2ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jComboBox2ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+          String poilocation = jTextField1.getText();
+          String city = jComboBox1.getSelectedItem().toString();
+          String state = jComboBox2.getSelectedItem().toString();
+          String zipcode = jTextField2.getText();
+          try {
+            Connection conn = null;
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/javabase",  "root", "123");
+            System.out.println(conn.toString());
+            Statement stmt = conn.createStatement();
+            String sql = "INSERT INTO POI (Location, Zipcode, City, State) VALUES('"+poilocation+"','"+ zipcode +"','"+city+"','"+state+"');";
+            System.out.println("query: " + sql );
+//            String sql2 = "SELECT * FROM CITYSTATE";
+//            ResultSet rs = stmt.executeQuery(sql2);
+//            if (rs.next()) {
+//                System.out.println(rs.getString(0));
+//            }
+//            System.out.println("query: " + sql2 );
+            stmt.executeUpdate(sql); 
+                                 
+            conn.close();
+            } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this,"Error in connectivity" );
+        }  
+        
+        
+        
+        
+    }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
      * @param args the command line arguments

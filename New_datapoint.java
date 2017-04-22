@@ -157,26 +157,28 @@ public class New_datapoint extends javax.swing.JFrame {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
-          Connection conn = null;
-          conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/javabase",  "root", "123");
-          System.out.println(conn.toString());
           String poilocation = jComboBox1.getSelectedItem().toString();
           Date date = dateChooserCombo1.getSelectedDate().getTime();
           Timestamp ts = new Timestamp(date.getTime());
-          String datatype = jComboBox2.getSelectedItem().toString();
+          java.util.Date dt = ts;
+//          String datatype = jComboBox2.getSelectedItem().toString();
+          String datatype = "Mold";
           String datavalue = jTextField1.getText();
+          System.out.println(ts);
           try {
             Connection conn = null;
             conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/javabase",  "root", "123");
             System.out.println(conn.toString());
             Statement stmt = conn.createStatement();
-            String sql = "INSERT INTO USER VALUES('"+username+"','"+Email+"','"+password+"','"+usertype+"');";
+            String sql = "INSERT INTO DATAPOINT (POIlocation, DateTime, DataValue, Datatype) VALUES('"+poilocation+"','"+ dt +"','"+datavalue+"','"+datatype+"');";
             System.out.println("query: " + sql );
             stmt.executeUpdate(sql);                       
             conn.close();
             } catch (Exception ex) {
             JOptionPane.showMessageDialog(this,"Error in connectivity" );
         }  
+  
+ 
   
                 
     }//GEN-LAST:event_jButton2ActionPerformed
