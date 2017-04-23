@@ -9,6 +9,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.sql.*;
 import java.text.DateFormat;
+import java.text.ParseException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 
@@ -156,26 +159,38 @@ public class New_datapoint extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
-          String poilocation = jComboBox1.getSelectedItem().toString();
-          Date date = dateChooserCombo1.getSelectedDate().getTime();
-          Timestamp ts = new Timestamp(date.getTime());
-          java.util.Date dt = ts;
-//          String datatype = jComboBox2.getSelectedItem().toString();
-          String datatype = "Mold";
-          String datavalue = jTextField1.getText();
-          System.out.println(ts);
-          try {
+          try {                                         
+              // TODO add your handling code here:
+        String poilocation = jComboBox1.getSelectedItem().toString();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = dateChooserCombo1.getSelectedDate().getTime();
+//          Timestamp ts = new Timestamp(date.getTime());
+//          java.util.Date dt = ts;
+        String str = sdf.format(date);
+        System.out.println(str);
+        java.util.Date st = sdf.parse(str);
+        java.sql.Date sqldate = new java.sql.Date(st.getTime());
+        //          String datatype = jComboBox2.getSelectedItem().toString();
+        String datatype = "Mold";
+        String datavalue = jTextField1.getText();
+        try {
             Connection conn = null;
             conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/javabase",  "root", "123");
             System.out.println(conn.toString());
             Statement stmt = conn.createStatement();
-            String sql = "INSERT INTO DATAPOINT (POIlocation, DateTime, DataValue, Datatype) VALUES('"+poilocation+"','"+ dt +"','"+datavalue+"','"+datatype+"');";
+            String sql = "INSERT INTO DATAPOINT (POIlocation, DateTime, DataValue, Datatype) VALUES('"+poilocation+"','"+ sqldate +"','"+datavalue+"','"+datatype+"');";
             System.out.println("query: " + sql );
-            stmt.executeUpdate(sql);                       
+            stmt.executeUpdate(sql);
             conn.close();
-            } catch (Exception ex) {
+        } catch (Exception ex) {
             JOptionPane.showMessageDialog(this,"Error in connectivity" );
+        }
+
+
+
+
+          } catch (ParseException ex) {
+            Logger.getLogger(New_datapoint.class.getName()).log(Level.SEVERE, null,ex);
         }  
   
  

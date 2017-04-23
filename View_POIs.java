@@ -7,8 +7,17 @@ package GUI1;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.Statement;
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -48,6 +57,8 @@ public class View_POIs extends javax.swing.JFrame {
         jComboBox3 = new javax.swing.JComboBox<>();
         jTextField1 = new javax.swing.JTextField();
         jCheckBox1 = new javax.swing.JCheckBox();
+        dateChooserCombo1 = new datechooser.beans.DateChooserCombo();
+        dateChooserCombo2 = new datechooser.beans.DateChooserCombo();
         jLabel8 = new javax.swing.JLabel();
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
@@ -59,31 +70,30 @@ public class View_POIs extends javax.swing.JFrame {
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null}
+
             },
             new String [] {
-                "Location Name", "City", "Zip code", "Flagged?", "Date Flagged"
+                "Location Name", "Date Flagged", "Flagged? ", "Zipcode", "City", "State"
             }
         ) {
-            boolean[] canEdit = new boolean [] {
-                false, false, false, false, false
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class, java.lang.Boolean.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
 
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
             }
         });
         jTable1.getTableHeader().setReorderingAllowed(false);
         jScrollPane1.setViewportView(jTable1);
+        if (jTable1.getColumnModel().getColumnCount() > 0) {
+            jTable1.getColumnModel().getColumn(0).setHeaderValue("Location Name");
+            jTable1.getColumnModel().getColumn(1).setHeaderValue("Date Flagged");
+            jTable1.getColumnModel().getColumn(2).setHeaderValue("Flagged");
+            jTable1.getColumnModel().getColumn(3).setHeaderValue("Zip code");
+            jTable1.getColumnModel().getColumn(4).setHeaderValue("City");
+            jTable1.getColumnModel().getColumn(5).setHeaderValue("State");
+        }
 
         jButton1.setText("Back");
 
@@ -101,15 +111,24 @@ public class View_POIs extends javax.swing.JFrame {
 
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
-        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Alabama ", "Alaska ", "Arizona ", "Arkansas ", "California ", "Colorado ", "Connecticut ", "Delaware ", "Florida ", "Georgia ", "Hawaii ", "Idaho ", "Illinois Indiana ", "Iowa ", "Kansas ", "Kentucky ", "Louisiana ", "Maine ", "Maryland ", "Massachusetts ", "Michigan ", "Minnesota ", "Mississippi ", "Missouri ", "Montana Nebraska ", "Nevada ", "New Hampshire ", "New Jersey ", "New Mexico ", "New York ", "North Carolina ", "North Dakota ", "Ohio ", "Oklahoma ", "Oregon ", "Pennsylvania Rhode Island ", "South Carolina ", "South Dakota ", "Tennessee ", "Texas ", "Utah ", "Vermont ", "Virginia ", "Washington ", "West Virginia ", "Wisconsin ", "Wyoming", " " }));
+        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Not Selected", "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming", " " }));
+        jComboBox2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBox2ActionPerformed(evt);
+            }
+        });
 
-        jComboBox3.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jComboBox3.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Not Selected", "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         jCheckBox1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jCheckBox1ActionPerformed(evt);
             }
         });
+
+        dateChooserCombo1.setCalendarPreferredSize(new java.awt.Dimension(500, 500));
+
+        dateChooserCombo2.setCalendarPreferredSize(new java.awt.Dimension(500, 500));
 
         jLabel8.setText("to");
 
@@ -164,13 +183,17 @@ public class View_POIs extends javax.swing.JFrame {
                                         .addComponent(jCheckBox1))
                                     .addGroup(layout.createSequentialGroup()
                                         .addGap(6, 6, 6)
-                                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(dateChooserCombo1, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(jTextField1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE))
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(jLabel8))))
+                                        .addComponent(jLabel8)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(dateChooserCombo2, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE))))
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(228, 228, 228)
                                 .addComponent(jLabel1)))
-                        .addGap(0, 150, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
             .addGroup(layout.createSequentialGroup()
                 .addGap(227, 227, 227)
@@ -203,9 +226,17 @@ public class View_POIs extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel6)
                             .addComponent(jCheckBox1))
-                        .addGap(16, 16, 16)
-                        .addComponent(jLabel7)
-                        .addGap(0, 8, Short.MAX_VALUE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(16, 16, 16)
+                                .addComponent(jLabel7)
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(dateChooserCombo2, javax.swing.GroupLayout.DEFAULT_SIZE, 28, Short.MAX_VALUE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(dateChooserCombo1, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -230,34 +261,123 @@ public class View_POIs extends javax.swing.JFrame {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
+//        DefaultTableModel model=(DefaultTableModel) jTable1.getModel();
+//        while(model.getRowCount()>0){
+//            model.setRowCount(0);
+//        }     
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        // TODO add your handling code here:
-        String poilocation = jComboBox1.getSelectedItem().toString();
-        String city = jComboBox3.getSelectedItem().toString();
-        String state = jComboBox2.getSelectedItem().toString();
-        int zipcode = Integer.parseInt(jTextField1.getText());
-        String flagged = jCheckBox1.getText();        
-        System.out.println(flagged);
-        try {
-            Connection conn = null;
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/javabase",  "root", "123");
-            System.out.println(conn.toString());
-            Statement stmt = conn.createStatement();
-//            String sql = "INSERT INTO USER VALUES('"+poilocation+"','"+date+"','"+datatype+"','"+datavalue+"');";
-            String sql = "SELECT * FROM POI WHERE Location=poilocation OR City=city OR State=state;";
-            System.out.println("query: " + sql );
-            stmt.executeUpdate(sql);                       
-            conn.close();
-            } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this,"Error in connectivity" );
+        try {                                         
+            // TODO add your handling code here:
+            String poilocation = jComboBox1.getSelectedItem().toString();
+            if(poilocation== "Not Selected"){
+                poilocation = "%";
+            }
+            String city = jComboBox3.getSelectedItem().toString();
+            if ("Not Selected".equals(city)){
+                city = "%";
+            }
+            String state = jComboBox2.getSelectedItem().toString();
+            if ("Not Selected".equals(state)){
+                state = "%";
+            }
+            String zip = jTextField1.getText();
+            int length = zip.length();
+            String zipcode = null;
+            if (zip != null && length == 5){
+                zipcode = jTextField1.getText();
+            } else{
+                zipcode = "%";
+            }
+//        Boolean flagged = Boolean.parseBoolean(jCheckBox1.getText());
+          Boolean flags = jCheckBox1.isSelected();
+          int flagged = 0;
+          if (flags==true){
+           flagged = 1;
+          }
+          System.out.println(flagged); 
+          SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+          Date start = dateChooserCombo1.getSelectedDate().getTime();
+//        Timestamp start_ts = new Timestamp(start.getTime());
+//        System.out.println(start.getClass());
+//        java.util.Date start_dt = start_ts;
+          String strstart = sdf.format(start);
+          System.out.println(strstart);
+          java.util.Date st = sdf.parse(strstart);
+          java.sql.Date sqlStartDate = new java.sql.Date(st.getTime());
+          Date end = dateChooserCombo2.getSelectedDate().getTime();
+//          Timestamp end_ts = new Timestamp(end.getTime());
+//          java.util.Date end_dt = end_ts;
+          String strend = sdf.format(end);
+          System.out.println(strend);
+          java.util.Date st2 = sdf.parse(strend);
+          java.sql.Date sqlEndDate = new java.sql.Date(st2.getTime());
+
+          try {
+              Connection conn = null;
+              conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/javabase",  "root", "123");
+              System.out.println(conn.toString());
+              Statement stmt = conn.createStatement();
+          //            String sql = "INSERT INTO USER VALUES('"+poilocation+"','"+date+"','"+datatype+"','"+datavalue+"');";
+          String sql = "SELECT * FROM POI WHERE Location LIKE '"+poilocation+"' AND City LIKE '"+city+"' AND State LIKE '"+state+"' AND Zipcode LIKE '"+zipcode+"' AND Flagged LIKE '"+flagged+"' AND DateFlagged BETWEEN '"+sqlStartDate+"' AND '"+sqlEndDate+"';";
+          System.out.println("query: " + sql );
+          ResultSet rs = stmt.executeQuery(sql);
+          testResultSet(rs);
+          ResultSetMetaData meta = rs.getMetaData();
+          int numberOfColumns = meta.getColumnCount();
+          DefaultTableModel model= (DefaultTableModel) jTable1.getModel();
+          while (rs.next()){
+//                String location = rs.getString("Location");
+//                Date dateFlagged = rs.getDate("DateFlagged");
+//                Boolean flag = rs.getBoolean("Flagged");
+//                String zipCode = rs.getString("Zipcode");
+//                String City = rs.getString("City");
+//                String State = rs.getString("State");
+//                model.addRow(new Object[]{location, dateFlagged, flag, zipCode, City, State});
+              Object [] rowData = new Object[numberOfColumns];
+              for (int i=0; i<rowData.length; ++i){
+                  rowData[i]=rs.getObject(i+1);
+              }
+              model.addRow(rowData);
+              System.out.println(rowData);
+          }  
+          jTable1.setModel(model);
+          
+          conn.close();
+          } catch (Exception ex) {
+              JOptionPane.showMessageDialog(this,"Error in connectivity" );
+          }
+        } catch (ParseException ex) {
+            Logger.getLogger(View_POIs.class.getName()).log(Level.SEVERE, null,ex);
         }  
         
-      
-       
+  
     }//GEN-LAST:event_jButton3ActionPerformed
 
+    private void jComboBox2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox2ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jComboBox2ActionPerformed
+
+    public void testResultSet(ResultSet res){
+        try{
+            while(res.next()){
+                System.out.println("POI location: "+ res.getString("Location"));
+                System.out.println("DateFlagged: "+ res.getDate("DateFlagged"));
+                System.out.println("Flagged: "+ res.getString("Flagged"));
+                System.out.println("Zipcode: "+ res.getString("Zipcode"));
+                System.out.println("City: "+ res.getString("City"));
+                System.out.println("State: "+ res.getString("State"));
+            }        
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    
+    
+    
     /**
      * @param args the command line arguments
      */
@@ -294,6 +414,8 @@ public class View_POIs extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private datechooser.beans.DateChooserCombo dateChooserCombo1;
+    private datechooser.beans.DateChooserCombo dateChooserCombo2;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
