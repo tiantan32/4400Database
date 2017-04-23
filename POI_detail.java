@@ -5,6 +5,21 @@
  */
 package GUI1;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.Statement;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author Yang-mac
@@ -40,30 +55,51 @@ public class POI_detail extends javax.swing.JFrame {
         jTextField1 = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
         jTextField2 = new javax.swing.JTextField();
+        dateChooserCombo1 = new datechooser.beans.DateChooserCombo();
         jLabel6 = new javax.swing.JLabel();
+        dateChooserCombo2 = new datechooser.beans.DateChooserCombo();
+        jButton2 = new javax.swing.JButton();
+        jButton3 = new javax.swing.JButton();
+        jButton4 = new javax.swing.JButton();
 
         jLabel7.setFont(new java.awt.Font("Lucida Grande", 0, 24)); // NOI18N
         jLabel7.setText("jLabel7");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setResizable(false);
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null}
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null}
             },
             new String [] {
-                "Location Name", "City", "State", "Zip code", "Flagged?", "Date Flagged"
+                "Data type", "Date value", "Time&date of data reading"
             }
-        ));
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.Integer.class, java.lang.Object.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         jScrollPane1.setViewportView(jTable1);
 
         jButton1.setText("Back");
@@ -84,89 +120,317 @@ public class POI_detail extends javax.swing.JFrame {
 
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
-        jTextField1.setText("jTextField1");
-
         jLabel5.setText("to");
 
-        jTextField2.setText("jTextField1");
+        dateChooserCombo1.setCalendarPreferredSize(new java.awt.Dimension(500, 500));
+        try {
+            dateChooserCombo1.setDefaultPeriods(new datechooser.model.multiple.PeriodSet(new datechooser.model.multiple.Period(new java.util.GregorianCalendar(2017, 0, 1),
+                new java.util.GregorianCalendar(2017, 0, 1))));
+    } catch (datechooser.model.exeptions.IncompatibleDataExeption e1) {
+        e1.printStackTrace();
+    }
 
-        jLabel6.setText("to");
+    jLabel6.setText("to");
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jSeparator1)
-                        .addContainerGap())
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 28, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 454, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(19, 19, 19))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(jButton1)
-                                .addGap(208, 208, 208))))))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(50, 50, 50)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel2)
-                    .addComponent(jLabel3)
-                    .addComponent(jLabel4))
-                .addGap(77, 77, 77)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1)
-                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel6)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(40, 40, 40)
-                                .addComponent(jLabel5)))
-                        .addGap(31, 31, 31)
-                        .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(0, 59, Short.MAX_VALUE))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
+    dateChooserCombo2.setCalendarPreferredSize(new java.awt.Dimension(500, 500));
+    try {
+        dateChooserCombo2.setDefaultPeriods(new datechooser.model.multiple.PeriodSet(new datechooser.model.multiple.Period(new java.util.GregorianCalendar(2017, 0, 1),
+            new java.util.GregorianCalendar(2017, 0, 1))));
+} catch (datechooser.model.exeptions.IncompatibleDataExeption e1) {
+    e1.printStackTrace();
+    }
+
+    jButton2.setText("Apply Filter");
+    jButton2.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            jButton2ActionPerformed(evt);
+        }
+    });
+
+    jButton3.setText("Reset Filter");
+    jButton3.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            jButton3ActionPerformed(evt);
+        }
+    });
+
+    jButton4.setText("Flag");
+    jButton4.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            jButton4ActionPerformed(evt);
+        }
+    });
+
+    javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+    getContentPane().setLayout(layout);
+    layout.setHorizontalGroup(
+        layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        .addGroup(layout.createSequentialGroup()
+            .addContainerGap()
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                    .addComponent(jSeparator1)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(jButton2)
+                    .addGap(154, 154, 154))
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                    .addGap(0, 29, Short.MAX_VALUE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(jButton3)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 454, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGap(19, 19, 19))))
+        .addGroup(layout.createSequentialGroup()
+            .addGap(50, 50, 50)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(jLabel2)
+                .addComponent(jLabel3)
+                .addComponent(jLabel4))
+            .addGap(77, 77, 77)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(jLabel1)
-                .addGap(15, 15, 15)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel3)
-                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel5)
-                            .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(9, 9, 9)
-                        .addComponent(jLabel4))
-                    .addComponent(jLabel6))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 29, Short.MAX_VALUE)
-                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(3, 3, 3)
+                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createSequentialGroup()
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(dateChooserCombo1, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(jLabel6))
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel5)))
+                    .addGap(31, 31, 31)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(dateChooserCombo2, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE))))
+            .addGap(0, 62, Short.MAX_VALUE))
+        .addGroup(layout.createSequentialGroup()
+            .addGap(78, 78, 78)
+            .addComponent(jButton1)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jButton4)
+            .addGap(92, 92, 92))
+    );
+    layout.setVerticalGroup(
+        layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addContainerGap()
+            .addComponent(jLabel1)
+            .addGap(15, 15, 15)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addComponent(jLabel2)
+                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(layout.createSequentialGroup()
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel3)
+                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel5)
+                        .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                            .addGap(7, 7, 7)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addComponent(dateChooserCombo1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jLabel4)))
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(dateChooserCombo2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addComponent(jLabel6))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 29, Short.MAX_VALUE)
+                    .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
+                .addGroup(layout.createSequentialGroup()
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jButton2)
+                        .addComponent(jButton3))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGap(3, 3, 3)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                 .addComponent(jButton1)
-                .addContainerGap())
-        );
+                .addComponent(jButton4))
+            .addContainerGap())
+    );
 
-        pack();
+    pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
+        //Back:
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        try {
+            // Apply Filter:
+            DefaultTableModel model=(DefaultTableModel) jTable1.getModel();
+            while(model.getRowCount()>0){
+                model.setRowCount(0);
+            } 
+            
+            String datatype = jComboBox1.getSelectedItem().toString();
+            datatype = "Mold";
+            String datavalue1 = jTextField1.getText();
+            String datavalue2 = jTextField2.getText();
+            int value1 = 0;
+            int value2 = 0;
+            if (datavalue1.equals("") || datavalue2.equals("")){
+               JOptionPane.showMessageDialog(this,"Data Value Insertion is needed" );
+            } else {
+                value1 = Integer.parseInt(datavalue1);
+                value2 = Integer.parseInt(datavalue2);
+            }
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            Date start = dateChooserCombo1.getSelectedDate().getTime();
+            String strstart = sdf.format(start);
+            System.out.println(strstart);
+            java.util.Date st = sdf.parse(strstart);
+            java.sql.Date sqlStartDate = new java.sql.Date(st.getTime());
+            Date end = dateChooserCombo2.getSelectedDate().getTime();
+            String strend = sdf.format(end);
+            System.out.println(strend);
+            java.util.Date st2 = sdf.parse(strend);
+            java.sql.Date sqlEndDate = new java.sql.Date(st2.getTime());
+            
+            try {
+              Connection conn = null;
+              conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/javabase",  "root", "123");
+              System.out.println(conn.toString());
+//              Statement stmt = conn.createStatement();
+              PreparedStatement ps = conn.prepareStatement( "SELECT * FROM DATAPOINT WHERE DataType LIKE '"+datatype+"' AND DateTime Between '"+sqlStartDate+"' AND '"+sqlEndDate+"' AND DataValue BETWEEN ? AND ?;");
+              ps.setInt(1, value1);
+              ps.setInt(2, value2);
+              ResultSet rs = ps.executeQuery();
+              ResultSetMetaData meta = rs.getMetaData();
+              int numberOfColumns = meta.getColumnCount();
+              jScrollPane1.repaint();        
+              while (rs.next()){
+                  Object [] rowData = new Object[numberOfColumns];
+                  for (int i=0; i<rowData.length; ++i){
+                     rowData[i]=rs.getObject(i+1);
+                  }
+                  model.addRow(rowData);
+                  System.out.println(rowData);
+                }  
+          model.fireTableDataChanged();
+          jTable1.setModel(model);
+          
+          conn.close();
+          } catch (Exception ex) {
+              JOptionPane.showMessageDialog(this,"Error in connectivity" );
+          }
+        } catch (ParseException ex) {
+            Logger.getLogger(POI_detail.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        // Reset Filter:
+        try {
+            // Reset Filter:
+            DefaultTableModel model=(DefaultTableModel) jTable1.getModel();
+            while(model.getRowCount()>0){
+                model.setRowCount(0);
+            }
+            jComboBox1.setSelectedIndex(0);
+            jTextField1.setText("");
+            jTextField2.setText("");
+            SimpleDateFormat format = new SimpleDateFormat("mm/dd/yyyy");
+            Date myDefaultDate = format.parse("1/1/2017");
+            Calendar tCalendar = Calendar.getInstance();
+            tCalendar.setTime(myDefaultDate);
+            dateChooserCombo1.setSelectedDate(tCalendar);
+            dateChooserCombo2.setSelectedDate(tCalendar);
+        } catch (ParseException ex) {
+            Logger.getLogger(View_POIs.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        try {                                         
+            // flag:
+            String datatype = jComboBox1.getSelectedItem().toString();
+            datatype = "Mold";
+            String datavalue1 = jTextField1.getText();
+            String datavalue2 = jTextField2.getText();
+            int value1 = 0;
+            int value2 = 0;
+            if (datavalue1.equals("") || datavalue2.equals("")){
+                JOptionPane.showMessageDialog(this,"Data Value Insertion is needed" );
+            } else {
+                value1 = Integer.parseInt(datavalue1);
+                value2 = Integer.parseInt(datavalue2);
+            }
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            Date start = dateChooserCombo1.getSelectedDate().getTime();
+            String strstart = sdf.format(start);
+            System.out.println(strstart);
+            java.util.Date st = sdf.parse(strstart);
+            java.sql.Date sqlStartDate = new java.sql.Date(st.getTime());
+            Date end = dateChooserCombo2.getSelectedDate().getTime();
+            String strend = sdf.format(end);
+            System.out.println(strend);
+            java.util.Date st2 = sdf.parse(strend);
+            java.sql.Date sqlEndDate = new java.sql.Date(st2.getTime());
+            
+            try {
+                Connection conn = null;
+                conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/javabase",  "root", "123");
+                System.out.println(conn.toString());
+                Statement stmt = conn.createStatement();
+                PreparedStatement ps = conn.prepareStatement( "SELECT * FROM DATAPOINT, POI WHERE DataType LIKE '"+datatype+"' AND DateTime Between '"+sqlStartDate+"' AND '"+sqlEndDate+"' AND DataValue BETWEEN ? AND ? AND POIlocation = Location;");
+                ps.setInt(1, value1);
+                ps.setInt(2, value2);
+                ResultSet rs = ps.executeQuery();
+                while(rs.next()){
+                    SimpleDateFormat Format = new SimpleDateFormat("yyyy-MM-dd");
+                    Date date = new Date();
+                    String current = Format.format(date);
+                    System.out.println(current);
+                    java.util.Date currenttime = sdf.parse(current);
+                    java.sql.Date dateflagged = new java.sql.Date(currenttime.getTime());
+                    String flagged = rs.getString("Flagged");
+                    String location = rs.getString("Location");
+                    int flag = Integer.parseInt(flagged);
+                    flag = 1-flag;
+                    if (flag==0){
+                        Boolean flags = false;
+                        PreparedStatement ps2 = conn.prepareStatement( "UPDATE POI SET Flagged=?, DateFlagged = NULL WHERE Location = '"+ location+"';");
+                        ps2.setBoolean(1, flags);
+                        System.out.println(ps2.toString());
+                        ps2.executeUpdate();
+                    } else {
+                        Boolean flags = true;
+                        PreparedStatement ps3 = conn.prepareStatement("UPDATE POI SET Flagged=?, DateFlagged = ? WHERE Location = '"+ location+"';");
+                        ps3.setBoolean(1, flags);
+                        ps3.setDate(2, dateflagged);
+                        System.out.println(ps3.toString());
+                        ps3.executeUpdate();
+                    }
+                }
+
+                
+                stmt.close();
+                conn.close();
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this,"Error in connectivity" );
+            }
+            
+            
+        } catch (ParseException ex) {
+              Logger.getLogger(POI_detail.class.getName()).log(Level.SEVERE, null,ex);
+          }
+        
+        
+    }//GEN-LAST:event_jButton4ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -204,7 +468,12 @@ public class POI_detail extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private datechooser.beans.DateChooserCombo dateChooserCombo1;
+    private datechooser.beans.DateChooserCombo dateChooserCombo2;
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton4;
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;

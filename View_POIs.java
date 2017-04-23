@@ -81,9 +81,16 @@ public class View_POIs extends javax.swing.JFrame {
             Class[] types = new Class [] {
                 java.lang.String.class, java.lang.String.class, java.lang.Boolean.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false
+            };
 
             public Class getColumnClass(int columnIndex) {
                 return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
             }
         });
         jTable1.getTableHeader().setReorderingAllowed(false);
@@ -275,7 +282,7 @@ public class View_POIs extends javax.swing.JFrame {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         try {
-            // TODO add your handling code here:
+            // Reset Filter:
             DefaultTableModel model=(DefaultTableModel) jTable1.getModel();
             while(model.getRowCount()>0){
                 model.setRowCount(0);
@@ -301,7 +308,7 @@ public class View_POIs extends javax.swing.JFrame {
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         try {                                         
-            // TODO add your handling code here:
+            // Apply Filter:
             DefaultTableModel model=(DefaultTableModel) jTable1.getModel();
             while(model.getRowCount()>0){
                   model.setRowCount(0);
@@ -333,18 +340,13 @@ public class View_POIs extends javax.swing.JFrame {
            flagged = 1;
           }
           System.out.println(flagged); 
-          SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+          SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
           Date start = dateChooserCombo1.getSelectedDate().getTime();
-//        Timestamp start_ts = new Timestamp(start.getTime());
-//        System.out.println(start.getClass());
-//        java.util.Date start_dt = start_ts;
           String strstart = sdf.format(start);
           System.out.println(strstart);
           java.util.Date st = sdf.parse(strstart);
           java.sql.Date sqlStartDate = new java.sql.Date(st.getTime());
           Date end = dateChooserCombo2.getSelectedDate().getTime();
-//          Timestamp end_ts = new Timestamp(end.getTime());
-//          java.util.Date end_dt = end_ts;
           String strend = sdf.format(end);
           System.out.println(strend);
           java.util.Date st2 = sdf.parse(strend);
@@ -355,15 +357,19 @@ public class View_POIs extends javax.swing.JFrame {
               conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/javabase",  "root", "123");
               System.out.println(conn.toString());
               Statement stmt = conn.createStatement();
-          String sql = "SELECT * FROM POI WHERE Location LIKE '"+poilocation+"' AND City LIKE '"+city+"' AND State LIKE '"+state+"' AND Zipcode LIKE '"+zipcode+"' AND Flagged LIKE '"+flagged+"' AND DateFlagged BETWEEN '"+sqlStartDate+"' AND '"+sqlEndDate+"';";
+          String sql;
+          if (flagged == 1){
+              sql = "SELECT * FROM POI WHERE Location LIKE '"+poilocation+"' AND City LIKE '"+city+"' AND State LIKE '"+state+"' AND Zipcode LIKE '"+zipcode+"' AND Flagged LIKE '"+flagged+"' AND DateFlagged BETWEEN '"+sqlStartDate+"' AND '"+sqlEndDate+"';";
+          } else{
+              sql = "SELECT * FROM POI WHERE Location LIKE '"+poilocation+"' AND City LIKE '"+city+"' AND State LIKE '"+state+"' AND Zipcode LIKE '"+zipcode+"' AND Flagged LIKE '"+flagged+"';";
+          }
+          
           System.out.println("query: " + sql );
           ResultSet rs = stmt.executeQuery(sql);
           ResultSetMetaData meta = rs.getMetaData();
           int numberOfColumns = meta.getColumnCount();
-//          DefaultTableModel model= (DefaultTableModel) jTable1.getModel();
           jScrollPane1.repaint();        
           while (rs.next()){
-              System.out.println("abc");
               Object [] rowData = new Object[numberOfColumns];
              for (int i=0; i<rowData.length; ++i){
                   rowData[i]=rs.getObject(i+1);
@@ -381,28 +387,12 @@ public class View_POIs extends javax.swing.JFrame {
         } catch (ParseException ex) {
             Logger.getLogger(View_POIs.class.getName()).log(Level.SEVERE, null,ex);
         }  
-  
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jComboBox2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox2ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jComboBox2ActionPerformed
 
-    public void testResultSet(ResultSet res){
-        try{
-            while(res.next()){
-                System.out.println("POI location: "+ res.getString("Location"));
-                System.out.println("DateFlagged: "+ res.getDate("DateFlagged"));
-                System.out.println("Flagged: "+ res.getString("Flagged"));
-                System.out.println("Zipcode: "+ res.getString("Zipcode"));
-                System.out.println("City: "+ res.getString("City"));
-                System.out.println("State: "+ res.getString("State"));
-            }        
-        }
-        catch(Exception e){
-            e.printStackTrace();
-        }
-    }
 
     
     /**
