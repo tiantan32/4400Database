@@ -18,6 +18,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 
 /**
  *
@@ -42,9 +43,9 @@ public class View_POIs extends javax.swing.JFrame {
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
+        jSeparator1 = new javax.swing.JSeparator();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
-        jSeparator1 = new javax.swing.JSeparator();
         jButton1 = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
@@ -297,7 +298,7 @@ public class View_POIs extends javax.swing.JFrame {
            flagged = 1;
           }
           System.out.println(flagged); 
-          SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+          SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm");
           Date start = dateChooserCombo1.getSelectedDate().getTime();
 //        Timestamp start_ts = new Timestamp(start.getTime());
 //        System.out.println(start.getClass());
@@ -319,29 +320,23 @@ public class View_POIs extends javax.swing.JFrame {
               conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/javabase",  "root", "123");
               System.out.println(conn.toString());
               Statement stmt = conn.createStatement();
-          //            String sql = "INSERT INTO USER VALUES('"+poilocation+"','"+date+"','"+datatype+"','"+datavalue+"');";
           String sql = "SELECT * FROM POI WHERE Location LIKE '"+poilocation+"' AND City LIKE '"+city+"' AND State LIKE '"+state+"' AND Zipcode LIKE '"+zipcode+"' AND Flagged LIKE '"+flagged+"' AND DateFlagged BETWEEN '"+sqlStartDate+"' AND '"+sqlEndDate+"';";
           System.out.println("query: " + sql );
           ResultSet rs = stmt.executeQuery(sql);
-          testResultSet(rs);
           ResultSetMetaData meta = rs.getMetaData();
           int numberOfColumns = meta.getColumnCount();
           DefaultTableModel model= (DefaultTableModel) jTable1.getModel();
+          jScrollPane1.repaint();        
           while (rs.next()){
-//                String location = rs.getString("Location");
-//                Date dateFlagged = rs.getDate("DateFlagged");
-//                Boolean flag = rs.getBoolean("Flagged");
-//                String zipCode = rs.getString("Zipcode");
-//                String City = rs.getString("City");
-//                String State = rs.getString("State");
-//                model.addRow(new Object[]{location, dateFlagged, flag, zipCode, City, State});
+              System.out.println("abc");
               Object [] rowData = new Object[numberOfColumns];
-              for (int i=0; i<rowData.length; ++i){
+             for (int i=0; i<rowData.length; ++i){
                   rowData[i]=rs.getObject(i+1);
               }
               model.addRow(rowData);
               System.out.println(rowData);
           }  
+          model.fireTableDataChanged();
           jTable1.setModel(model);
           
           conn.close();
@@ -350,7 +345,9 @@ public class View_POIs extends javax.swing.JFrame {
           }
         } catch (ParseException ex) {
             Logger.getLogger(View_POIs.class.getName()).log(Level.SEVERE, null,ex);
-        }  
+        }
+        
+        
         
   
     }//GEN-LAST:event_jButton3ActionPerformed
