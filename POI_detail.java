@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package GUI1;
+package phase3;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -13,6 +13,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.logging.Level;
@@ -29,6 +30,8 @@ public class POI_detail extends javax.swing.JFrame {
     /**
      * Creates new form POI_detail
      */
+	private ArrayList<String> dataType = new ArrayList<String>();
+	
     public POI_detail() {
         initComponents();
     }
@@ -64,6 +67,23 @@ public class POI_detail extends javax.swing.JFrame {
 
         jLabel7.setFont(new java.awt.Font("Lucida Grande", 0, 24)); // NOI18N
         jLabel7.setText("jLabel7");
+        
+        try {
+            Connection conn = null;
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/javabase",  "root", "123");
+            System.out.println(conn.toString());
+            Statement stmt = conn.createStatement();
+            String sql = "SELECT * FROM DATATYPE;"; // populates the city and state dropdowns
+            System.out.println("query: " + sql );
+            ResultSet rs = stmt.executeQuery(sql);
+            while (rs.next()) {
+            	String name = rs.getString("Type");
+            	dataType.add(name);
+            }
+            conn.close();
+            } catch (Exception ex) {
+             JOptionPane.showMessageDialog(this,"Error in connectivity" );
+        }
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -82,7 +102,7 @@ public class POI_detail extends javax.swing.JFrame {
                 {null, null, null}
             },
             new String [] {
-                "Data type", "Date value", "Time&date of data reading"
+                "Data type", "Data value", "Time&date of data reading"
             }
         ) {
             Class[] types = new Class [] {
@@ -117,8 +137,13 @@ public class POI_detail extends javax.swing.JFrame {
         jLabel3.setText("Data Value");
 
         jLabel4.setText("Time & Date");
+        
+        String[] type = new String[dataType.size()];
+        for (int i = 0; i<dataType.size(); i++) {
+        	type[i] = dataType.get(i);
+        }
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(type));
 
         jLabel5.setText("to");
 
@@ -273,7 +298,7 @@ public class POI_detail extends javax.swing.JFrame {
             } 
             
             String datatype = jComboBox1.getSelectedItem().toString();
-            datatype = "Mold";
+//            datatype = "Mold";
             String datavalue1 = jTextField1.getText();
             String datavalue2 = jTextField2.getText();
             int value1 = 0;
@@ -301,7 +326,7 @@ public class POI_detail extends javax.swing.JFrame {
               conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/javabase",  "root", "123");
               System.out.println(conn.toString());
 //              Statement stmt = conn.createStatement();
-              PreparedStatement ps = conn.prepareStatement( "SELECT * FROM DATAPOINT WHERE DataType LIKE '"+datatype+"' AND DateTime Between '"+sqlStartDate+"' AND '"+sqlEndDate+"' AND DataValue BETWEEN ? AND ?;");
+              PreparedStatement ps = conn.prepareStatement( "SELECT datatype, datavalue,datetime FROM DATAPOINT WHERE DataType LIKE '"+datatype+"' AND DateTime Between '"+sqlStartDate+"' AND '"+sqlEndDate+"' AND DataValue BETWEEN ? AND ?;");
               ps.setInt(1, value1);
               ps.setInt(2, value2);
               ResultSet rs = ps.executeQuery();

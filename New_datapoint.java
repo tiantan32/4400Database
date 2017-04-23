@@ -3,28 +3,33 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package GUI1;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.sql.*;
-import java.text.DateFormat;
+package phase3;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.text.ParseException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.JOptionPane;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 
+import javax.swing.JOptionPane;
 
 
 /**
  *
- * @author Yang-mac
+ * @author Zichen Wang
  */
 public class New_datapoint extends javax.swing.JFrame {
 
     /**
-     * Creates new form New data_point
+     * Creates new form New_datapoint
      */
+	
+	private ArrayList<String> poi = new ArrayList<String>();
+	private ArrayList<String> dataType = new ArrayList<String>();
+
+	
     public New_datapoint() {
         initComponents();
     }
@@ -65,12 +70,51 @@ public class New_datapoint extends javax.swing.JFrame {
         jLabel4.setText("Data type:");
 
         jLabel5.setText("Data value:");
+        
+        try {
+            Connection conn = null;
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/javabase",  "root", "123");
+            System.out.println(conn.toString());
+            Statement stmt = conn.createStatement();
+            String sql = "SELECT * FROM POI;"; // populates the city and state dropdowns
+            System.out.println("query: " + sql );
+            ResultSet rs = stmt.executeQuery(sql);
+            while (rs.next()) {
+            	String name = rs.getString("Location");
+            	poi.add(name);
+            }
+            sql = "SELECT * FROM DATATYPE;";
+            rs = stmt.executeQuery(sql);
+            while (rs.next()) {
+            	String temp = rs.getString("Type");
+            	dataType.add(temp);
+            }
+            conn.close();
+            } catch (Exception ex) {
+            // JOptionPane.showMessageDialog(this,"Error in connectivity" );
+        }
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        // populates the poi dropdown
+        String[] poiName = new String[poi.size()];
+        for (int i = 0; i<poi.size(); i++) {
+        	poiName[i] = poi.get(i);
+        }
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(poiName));
+        
+        // populates the data type dropdown
+        String[] type = new String[dataType.size()];
+        for (int i = 0; i<dataType.size(); i++) {
+        	type[i] = dataType.get(i);
+        }
+        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(type));
 
-        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-
+        
         jButton1.setText("Back");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         jButton2.setText("Submit");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
@@ -83,11 +127,16 @@ public class New_datapoint extends javax.swing.JFrame {
         try {
             dateChooserCombo1.setDefaultPeriods(new datechooser.model.multiple.PeriodSet(new datechooser.model.multiple.Period(new java.util.GregorianCalendar(2017, 3, 17),
                 new java.util.GregorianCalendar(2017, 3, 17))));
-    } catch (datechooser.model.exeptions.IncompatibleDataExeption e1) {
-        e1.printStackTrace();
-    }
+        } catch (datechooser.model.exeptions.IncompatibleDataExeption e1) {
+        	e1.printStackTrace();
+        }
 
     jButton3.setText("add a new location");
+    jButton3.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            jButton3ActionPerformed(evt);
+        }
+    });
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
@@ -157,86 +206,121 @@ public class New_datapoint extends javax.swing.JFrame {
 
     pack();
     }// </editor-fold>//GEN-END:initComponents
+    
+    // Performs the buttion actions
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {
+    	this.dispose();
+    	try {
+          for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+              if ("Nimbus".equals(info.getName())) {
+                  javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                  break;
+              }
+          }
+      } catch (ClassNotFoundException ex) {
+          java.util.logging.Logger.getLogger(ScientistFunctionality.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+      } catch (InstantiationException ex) {
+          java.util.logging.Logger.getLogger(ScientistFunctionality.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+      } catch (IllegalAccessException ex) {
+          java.util.logging.Logger.getLogger(ScientistFunctionality.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+      } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+          java.util.logging.Logger.getLogger(ScientistFunctionality.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+      }
+      //</editor-fold>
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-          try {                                         
-              // TODO add your handling code here:
-        String poilocation = jComboBox1.getSelectedItem().toString();
-        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yy hh:mm");
-//        Date date = dateChooserCombo1.getSelectedDate().getTime();
-        String date = dateChooserCombo1.getText();
-//          Timestamp ts = new Timestamp(date.getTime());
-//          java.util.Date dt = ts;
-        String minutes = jFormattedTextField1.getText();
-        String datemin = date + " " + minutes;
-        System.out.println(datemin);
-//        String str = sdf.format(datemin);
-        java.util.Date st = sdf.parse(datemin);
-        System.out.println(st);
-        java.sql.Timestamp sqldate = new java.sql.Timestamp(st.getTime());
-        
-        //          String datatype = jComboBox2.getSelectedItem().toString();
-        String datatype = "Mold";
-        String datavalue = jTextField1.getText();
-        try {
-            Connection conn = null;
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/javabase",  "root", "123");
-            System.out.println(conn.toString());
-            Statement stmt = conn.createStatement();
-            String sql = "INSERT INTO DATAPOINT (POIlocation, DateTime, DataValue, Datatype) VALUES('"+poilocation+"','"+ sqldate +"','"+datavalue+"','"+datatype+"');";
-            System.out.println("query: " + sql );
-            stmt.executeUpdate(sql);
-            conn.close();
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this,"Error in connectivity" );
-        }
-
-
-
-
-          } catch (ParseException ex) {
-            Logger.getLogger(New_datapoint.class.getName()).log(Level.SEVERE, null,ex);
-        }  
-  
- 
-  
-                
-    }//GEN-LAST:event_jButton2ActionPerformed
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(New_datapoint.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(New_datapoint.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(New_datapoint.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(New_datapoint.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new New_datapoint().setVisible(true);
-            }
-        });
+      /* Create and display the form */
+      java.awt.EventQueue.invokeLater(new Runnable() {
+          public void run() {
+              new ScientistFunctionality().setVisible(true);
+          }
+      });
     }
+    
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {
+    	String poi = jComboBox1.getSelectedItem().toString();
+    	String type = jComboBox2.getSelectedItem().toString();
+    	String value = jTextField1.getText();
+    	SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yy hh:mm");
+    	String date = dateChooserCombo1.getText();
+    	String minutes = jFormattedTextField1.getText();
+        String datemin = date + " " + minutes;
+        try {
+			java.util.Date st = sdf.parse(datemin);
+			java.sql.Timestamp sqldate = new java.sql.Timestamp(st.getTime());
+			 try {
+		            Connection conn = null;
+		            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/javabase",  "root", "123");
+		            System.out.println(conn.toString());
+		            Statement stmt = conn.createStatement();
+		            String sql = "INSERT INTO DATAPOINT (POIlocation, DateTime, DataValue, Datatype) VALUES('"+poi+"','"+ sqldate +"','"+value+"','"+type+"');";
+		            System.out.println("query: " + sql );
+		            stmt.executeUpdate(sql);
+		            conn.close();
+		        } catch (Exception ex) {
+		            JOptionPane.showMessageDialog(this,"Error in connectivity" );
+		        }
+			
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+        
+        
+    	this.dispose();
+    	try {
+          for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+              if ("Nimbus".equals(info.getName())) {
+                  javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                  break;
+              }
+          }
+      } catch (ClassNotFoundException ex) {
+          java.util.logging.Logger.getLogger(ScientistFunctionality.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+      } catch (InstantiationException ex) {
+          java.util.logging.Logger.getLogger(ScientistFunctionality.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+      } catch (IllegalAccessException ex) {
+          java.util.logging.Logger.getLogger(ScientistFunctionality.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+      } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+          java.util.logging.Logger.getLogger(ScientistFunctionality.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+      }
+      //</editor-fold>
+
+      /* Create and display the form */
+      java.awt.EventQueue.invokeLater(new Runnable() {
+          public void run() {
+              new ScientistFunctionality().setVisible(true);
+          }
+      });
+    }
+    
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {
+    	this.setVisible(false);
+    	try {
+          for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+              if ("Nimbus".equals(info.getName())) {
+                  javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                  break;
+              }
+          }
+      } catch (ClassNotFoundException ex) {
+          java.util.logging.Logger.getLogger(New_location.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+      } catch (InstantiationException ex) {
+          java.util.logging.Logger.getLogger(New_location.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+      } catch (IllegalAccessException ex) {
+          java.util.logging.Logger.getLogger(New_location.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+      } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+          java.util.logging.Logger.getLogger(New_location.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+      }
+      //</editor-fold>
+
+      /* Create and display the form */
+      java.awt.EventQueue.invokeLater(new Runnable() {
+          public void run() {
+              new New_location().setVisible(true);
+          }
+      });
+    }
+    
+    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private datechooser.beans.DateChooserCombo dateChooserCombo1;

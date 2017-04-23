@@ -3,13 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package GUI1;
+package phase3;
 
+import java.util.ArrayList;
+
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import javax.swing.JOptionPane;
 
 /**
  *
@@ -20,6 +23,18 @@ public class New_User extends javax.swing.JFrame {
     /**
      * Creates new form New_User
      */
+	private String username = "";
+	private String email = "";
+	private String password = "";
+	private String passConfirm = "";
+	private String usrType = "";
+	private String city = "";
+	private String state = "";
+	private String title = "";
+	private ArrayList<String> cityNames = new ArrayList<String>();
+	private ArrayList<String> stateNames = new ArrayList<String>();
+	private ArrayList<String> userTypes = new ArrayList<String>();
+	
     public New_User() {
         initComponents();
     }
@@ -38,11 +53,11 @@ public class New_User extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
-        jTextField2 = new javax.swing.JTextField();
+        usrInput = new javax.swing.JTextField();
+        emailInput = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
-        jPasswordField1 = new javax.swing.JPasswordField();
-        jPasswordField2 = new javax.swing.JPasswordField();
+        passInput = new javax.swing.JPasswordField();
+        passConInput = new javax.swing.JPasswordField();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         jComboBox1 = new javax.swing.JComboBox<>();
@@ -53,9 +68,34 @@ public class New_User extends javax.swing.JFrame {
         jLabel9 = new javax.swing.JLabel();
         jComboBox2 = new javax.swing.JComboBox<>();
         jComboBox3 = new javax.swing.JComboBox<>();
-        jTextField3 = new javax.swing.JTextField();
+        titleInput = new javax.swing.JTextField();
         jLabel10 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
+        
+        try {
+            Connection conn = null;
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/javabase",  "root", "123");
+            System.out.println(conn.toString());
+            Statement stmt = conn.createStatement();
+            String sql = "SELECT * FROM CITYSTATE;"; // populates the city and state dropdowns
+            System.out.println("query: " + sql );
+            ResultSet rs = stmt.executeQuery(sql);
+            while (rs.next()) {
+            	String city = rs.getString("City");
+            	String state = rs.getString("State");
+            	cityNames.add(city);
+            	stateNames.add(state);
+            }
+            sql = "SELECT * FROM USERTYPE;";
+            rs = stmt.executeQuery(sql);
+            while (rs.next()) {
+            	String temp = rs.getString(1);
+            	userTypes.add(temp);
+            }
+            conn.close();
+            } catch (Exception ex) {
+            	JOptionPane.showMessageDialog(this,"Error in connectivity" );
+        }
 
         jList1.setModel(new javax.swing.AbstractListModel<String>() {
             String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
@@ -73,42 +113,24 @@ public class New_User extends javax.swing.JFrame {
 
         jLabel3.setText("Email Address");
 
-        jTextField1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField1ActionPerformed(evt);
-            }
-        });
-
-        jTextField2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField2ActionPerformed(evt);
-            }
-        });
-
         jLabel4.setText("Password");
-
-        jPasswordField1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jPasswordField1ActionPerformed(evt);
-            }
-        });
-
-        jPasswordField2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jPasswordField2ActionPerformed(evt);
-            }
-        });
 
         jLabel5.setText("Confirm Password");
 
         jLabel6.setText("User Type");
+        
+        String[] types = new String[userTypes.size()];
+        for (int i = 0; i<userTypes.size(); i++) {
+        	types[i] = userTypes.get(i);
+        }
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "City Officials", "City scientists" }));
-        jComboBox1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jComboBox1ActionPerformed(evt);
-            }
-        });
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(types));
+        
+        String[] cities = new String[cityNames.size()];
+        for (int i = 0; i<cityNames.size(); i++) {
+        	cities[i] = cityNames.get(i);
+        }
+        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(cities));
 
         jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
@@ -117,21 +139,13 @@ public class New_User extends javax.swing.JFrame {
         jLabel8.setText("State:");
 
         jLabel9.setText("Title:");
-
-        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        jComboBox2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jComboBox2ActionPerformed(evt);
-            }
-        });
-
-        jComboBox3.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Alabama ", "Alaska ", "Arizona ", "Arkansas ", "California ", "Colorado ", "Connecticut ", "Delaware ", "Florida ", "Georgia ", "Hawaii ", "Idaho ", "Illinois Indiana ", "Iowa ", "Kansas ", "Kentucky ", "Louisiana ", "Maine ", "Maryland ", "Massachusetts ", "Michigan ", "Minnesota ", "Mississippi ", "Missouri ", "Montana Nebraska ", "Nevada ", "New Hampshire ", "New Jersey ", "New Mexico ", "New York ", "North Carolina ", "North Dakota ", "Ohio ", "Oklahoma ", "Oregon ", "Pennsylvania Rhode Island ", "South Carolina ", "South Dakota ", "Tennessee ", "Texas ", "Utah ", "Vermont ", "Virginia ", "Washington ", "West Virginia ", "Wisconsin ", "Wyoming", " " }));
-        jComboBox3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jComboBox3ActionPerformed(evt);
-            }
-        });
-
+        
+        String[] states = new String[stateNames.size()];
+        for (int i = 0; i<stateNames.size(); i++) {
+        	states[i] = stateNames.get(i);
+        }
+        jComboBox3.setModel(new javax.swing.DefaultComboBoxModel<>(states));
+        
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -146,7 +160,7 @@ public class New_User extends javax.swing.JFrame {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel9)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 191, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(titleInput, javax.swing.GroupLayout.PREFERRED_SIZE, 191, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel8)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -167,9 +181,10 @@ public class New_User extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jComboBox3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jLabel8)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel9)
-                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(titleInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(9, 9, 9))
         );
 
@@ -204,10 +219,10 @@ public class New_User extends javax.swing.JFrame {
                                     .addComponent(jLabel6))
                                 .addGap(24, 24, 24)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(jTextField2, javax.swing.GroupLayout.DEFAULT_SIZE, 192, Short.MAX_VALUE)
-                                    .addComponent(jTextField1)
-                                    .addComponent(jPasswordField1)
-                                    .addComponent(jPasswordField2, javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(emailInput, javax.swing.GroupLayout.DEFAULT_SIZE, 192, Short.MAX_VALUE)
+                                    .addComponent(usrInput)
+                                    .addComponent(passInput)
+                                    .addComponent(passConInput, javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
@@ -236,18 +251,18 @@ public class New_User extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(usrInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(16, 16, 16)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(emailInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel4)
-                    .addComponent(jPasswordField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(passInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPasswordField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(passConInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel5))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -266,102 +281,104 @@ public class New_User extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void jComboBox3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox3ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jComboBox3ActionPerformed
-
-    private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jComboBox1ActionPerformed
-
-    private void jComboBox2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jComboBox2ActionPerformed
-
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-        String username = jTextField1.getText();
-        String Email = jTextField2.getText();
-        String password = jPasswordField1.getText();
-        String repassword = jPasswordField2.getText();
-        String usertype = jComboBox1.getSelectedItem().toString();
-        if (password.equals(repassword));
-        else {
-            JOptionPane.showMessageDialog(this,"Password Mismatch" );
-        }    
-             try {
+    
+    // activate on click of "Create" button
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {
+    	boolean success = true;
+    	username = usrInput.getText();
+    	email = emailInput.getText();
+    	password = String.valueOf(passInput.getPassword());
+    	passConfirm = String.valueOf(passConInput.getPassword());
+    	usrType = (String) jComboBox1.getSelectedItem();
+    	city = (String)jComboBox2.getSelectedItem();
+    	state = (String)jComboBox3.getSelectedItem();
+    	title =  titleInput.getText();
+    	
+    	try {
             Connection conn = null;
             conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/javabase",  "root", "123");
             System.out.println(conn.toString());
             Statement stmt = conn.createStatement();
-            String sql = "INSERT INTO USER VALUES('"+username+"','"+Email+"','"+password+"','"+usertype+"');";
+            String sql = "SELECT * FROM USER WHERE Username='"+username+"';";
             System.out.println("query: " + sql );
-            stmt.executeUpdate(sql);                       
-            if (usertype.equals("CityOfficials")){
-                String city = jComboBox2.getSelectedItem().toString();
-                String state = jComboBox3.getSelectedItem().toString();
-                String title = jTextField3.getText();
-                String sql2 = "INSERT INTO CITYOFFICIAL (Username,Title,City,State) VALUES('"+username+"','"+title+"','"+city+"','"+state+"');";
-                System.out.println("query: " + sql2);
-                stmt.executeUpdate(sql2);
+            //stmt.executeQuery(sql);                       
+            ResultSet rs = stmt.executeQuery(sql);
+            if (rs.next()) {
+            	JOptionPane.showMessageDialog(new JFrame(), "Username already exists", "Registrition", JOptionPane.ERROR_MESSAGE);
+            	success = false;
+            	return;
             }
             conn.close();
             } catch (Exception ex) {
             JOptionPane.showMessageDialog(this,"Error in connectivity" );
-        }  
-        
-    }//GEN-LAST:event_jButton1ActionPerformed
-
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField1ActionPerformed
-
-    private void jTextField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField2ActionPerformed
-
-    private void jPasswordField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jPasswordField1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jPasswordField1ActionPerformed
-
-    private void jPasswordField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jPasswordField2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jPasswordField2ActionPerformed
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(New_User.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(New_User.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(New_User.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(New_User.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new New_User().setVisible(true);
+    	
+    	
+    	if (!password.equals(passConfirm)) {
+    		JOptionPane.showMessageDialog(new JFrame(), "Password mismatch", "Confirm Password", JOptionPane.ERROR_MESSAGE);
+    		success = false;
+    		return;
+    	}
+    	if (username.equals("")||email.equals("")||password.equals("")||passConfirm.equals("")||usrType.equals("")) {
+    		JOptionPane.showMessageDialog(new JFrame(), "Please fill in all fields", "Missing Fields", JOptionPane.ERROR_MESSAGE);
+    		success = false;
+    		return;
+    	}
+    	if (usrType.equals("CityOfficial")) {
+    		if (city.equals("") || state.equals("") || title.equals("")) {
+    			JOptionPane.showMessageDialog(new JFrame(), "Please fill in all fields inside the box", "Error Message", JOptionPane.ERROR_MESSAGE);
+    			success = false;
+    		}
+    	}
+    	
+    	if (success==true) {
+    		// write query into DB
+    		try {
+                Connection conn = null;
+                conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/javabase",  "root", "123");
+                System.out.println(conn.toString());
+                Statement stmt = conn.createStatement();
+                String sql = "INSERT INTO USER VALUES('"+username+"','"+email+"','"+password+"','"+usrType+"');";
+                System.out.println("query: " + sql );
+                stmt.executeUpdate(sql);                       
+                if (usrType.equals("CityOfficial")) {
+//                    String city = jComboBox2.getSelectedItem().toString();
+//                    String state = jComboBox3.getSelectedItem().toString();
+//                    String title = jTextField3.getText();
+                    String sql2 = "INSERT INTO CITYOFFICIAL (Username,Title,City,State) VALUES('"+username+"','"+title+"','"+city+"','"+state+"');";
+                    System.out.println("query: " + sql2);
+                    stmt.executeUpdate(sql2);
+                }
+                conn.close();
+                } catch (Exception ex) {
+                 JOptionPane.showMessageDialog(this,"Error in connectivity" );
             }
-        });
+    		
+			JOptionPane.showMessageDialog(new JFrame(), "Your account has been created!");
+			this.dispose(); // closes the registration form
+			// opens the login form
+			try {
+		          for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+		              if ("Nimbus".equals(info.getName())) {
+		                  javax.swing.UIManager.setLookAndFeel(info.getClassName());
+		                  break;
+		              }
+		          }
+		      } catch (ClassNotFoundException ex) {
+		          java.util.logging.Logger.getLogger(New_User.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+		      } catch (InstantiationException ex) {
+		          java.util.logging.Logger.getLogger(New_User.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+		      } catch (IllegalAccessException ex) {
+		          java.util.logging.Logger.getLogger(New_User.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+		      } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+		          java.util.logging.Logger.getLogger(New_User.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+		      }
+		      java.awt.EventQueue.invokeLater(new Runnable() {
+		          public void run() {
+		              new Login().setVisible(true);
+		          }
+		      });
+    	}
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -381,18 +398,12 @@ public class New_User extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel9;
     private javax.swing.JList<String> jList1;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPasswordField jPasswordField1;
-    private javax.swing.JPasswordField jPasswordField2;
+    private javax.swing.JPasswordField passInput;
+    private javax.swing.JPasswordField passConInput;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
+    private javax.swing.JTextField usrInput;
+    private javax.swing.JTextField emailInput;
+    private javax.swing.JTextField titleInput;
     // End of variables declaration//GEN-END:variables
-
-    public static class register {
-
-        public register() {
-        }
-    }
 }

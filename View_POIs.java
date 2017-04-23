@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package GUI1;
+package phase3;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -13,6 +13,7 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.logging.Level;
@@ -30,6 +31,12 @@ public class View_POIs extends javax.swing.JFrame {
     /**
      * Creates new form View_POIs
      */
+	
+	private ArrayList<String> cityNames = new ArrayList<String>();
+	private ArrayList<String> stateNames = new ArrayList<String>();
+	private ArrayList<String> poi = new ArrayList<String>();
+	
+
     public View_POIs() {
         initComponents();
     }
@@ -64,6 +71,7 @@ public class View_POIs extends javax.swing.JFrame {
         jLabel8 = new javax.swing.JLabel();
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
+        jButton5 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -123,7 +131,7 @@ public class View_POIs extends javax.swing.JFrame {
         jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Not Selected", "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming", " " }));
         jComboBox2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jComboBox2ActionPerformed(evt);
+                // jComboBox2ActionPerformed(evt);
             }
         });
 
@@ -164,6 +172,13 @@ public class View_POIs extends javax.swing.JFrame {
     jButton3.addActionListener(new java.awt.event.ActionListener() {
         public void actionPerformed(java.awt.event.ActionEvent evt) {
             jButton3ActionPerformed(evt);
+        }
+    });
+
+    jButton5.setText("Result");
+    jButton5.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            jButton5ActionPerformed(evt);
         }
     });
 
@@ -219,6 +234,8 @@ public class View_POIs extends javax.swing.JFrame {
         .addGroup(layout.createSequentialGroup()
             .addGap(227, 227, 227)
             .addComponent(jButton1)
+            .addGap(29, 29, 29)
+            .addComponent(jButton5)
             .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
     layout.setVerticalGroup(
@@ -270,7 +287,9 @@ public class View_POIs extends javax.swing.JFrame {
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(jButton1))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addComponent(jButton1)
+                .addComponent(jButton5)))
     );
 
     pack();
@@ -278,11 +297,46 @@ public class View_POIs extends javax.swing.JFrame {
 
     private void jCheckBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox1ActionPerformed
         // TODO add your handling code here:
+    	if (jCheckBox1.isSelected()) {
+    		dateChooserCombo1.setEnabled(true);
+    		dateChooserCombo2.setEnabled(true);
+    	} else {
+    		dateChooserCombo1.setEnabled(false);
+    		dateChooserCombo2.setEnabled(false);
+    	}
     }//GEN-LAST:event_jCheckBox1ActionPerformed
+    
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {
+    	this.dispose();
+    	try {
+          for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+              if ("Nimbus".equals(info.getName())) {
+                  javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                  break;
+              }
+          }
+      } catch (ClassNotFoundException ex) {
+          java.util.logging.Logger.getLogger(OfficialFunctionality.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+      } catch (InstantiationException ex) {
+          java.util.logging.Logger.getLogger(OfficialFunctionality.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+      } catch (IllegalAccessException ex) {
+          java.util.logging.Logger.getLogger(OfficialFunctionality.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+      } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+          java.util.logging.Logger.getLogger(OfficialFunctionality.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+      }
+      //</editor-fold>
+
+      /* Create and display the form */
+      java.awt.EventQueue.invokeLater(new Runnable() {
+          public void run() {
+              new OfficialFunctionality().setVisible(true);
+          }
+      });
+    }
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         try {
-            // Reset Filter:
+            // TODO add your handling code here:
             DefaultTableModel model=(DefaultTableModel) jTable1.getModel();
             while(model.getRowCount()>0){
                 model.setRowCount(0);
@@ -308,13 +362,13 @@ public class View_POIs extends javax.swing.JFrame {
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         try {                                         
-            // Apply Filter:
+            // TODO add your handling code here:
             DefaultTableModel model=(DefaultTableModel) jTable1.getModel();
             while(model.getRowCount()>0){
                   model.setRowCount(0);
             } 
             String poilocation = jComboBox1.getSelectedItem().toString();
-            if(poilocation== "Not Selected"){
+            if(poilocation.equals("Not Selected")){
                 poilocation = "%";
             }
             String city = jComboBox3.getSelectedItem().toString();
@@ -340,13 +394,18 @@ public class View_POIs extends javax.swing.JFrame {
            flagged = 1;
           }
           System.out.println(flagged); 
-          SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+          SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm");
           Date start = dateChooserCombo1.getSelectedDate().getTime();
+//        Timestamp start_ts = new Timestamp(start.getTime());
+//        System.out.println(start.getClass());
+//        java.util.Date start_dt = start_ts;
           String strstart = sdf.format(start);
           System.out.println(strstart);
           java.util.Date st = sdf.parse(strstart);
           java.sql.Date sqlStartDate = new java.sql.Date(st.getTime());
           Date end = dateChooserCombo2.getSelectedDate().getTime();
+//          Timestamp end_ts = new Timestamp(end.getTime());
+//          java.util.Date end_dt = end_ts;
           String strend = sdf.format(end);
           System.out.println(strend);
           java.util.Date st2 = sdf.parse(strend);
@@ -357,19 +416,20 @@ public class View_POIs extends javax.swing.JFrame {
               conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/javabase",  "root", "123");
               System.out.println(conn.toString());
               Statement stmt = conn.createStatement();
-          String sql;
-          if (flagged == 1){
-              sql = "SELECT * FROM POI WHERE Location LIKE '"+poilocation+"' AND City LIKE '"+city+"' AND State LIKE '"+state+"' AND Zipcode LIKE '"+zipcode+"' AND Flagged LIKE '"+flagged+"' AND DateFlagged BETWEEN '"+sqlStartDate+"' AND '"+sqlEndDate+"';";
-          } else{
-              sql = "SELECT * FROM POI WHERE Location LIKE '"+poilocation+"' AND City LIKE '"+city+"' AND State LIKE '"+state+"' AND Zipcode LIKE '"+zipcode+"' AND Flagged LIKE '"+flagged+"';";
-          }
-          
+              String sql = "";
+              if (flagged == 1){
+                  sql = "SELECT * FROM POI WHERE Location LIKE '"+poilocation+"' AND City LIKE '"+city+"' AND State LIKE '"+state+"' AND Zipcode LIKE '"+zipcode+"' AND Flagged LIKE '"+flagged+"' AND DateFlagged BETWEEN '"+sqlStartDate+"' AND '"+sqlEndDate+"';";
+              } else{
+                  sql = "SELECT * FROM POI WHERE Location LIKE '"+poilocation+"' AND City LIKE '"+city+"' AND State LIKE '"+state+"' AND Zipcode LIKE '"+zipcode+"' AND Flagged LIKE '"+flagged+"';";
+              }
           System.out.println("query: " + sql );
           ResultSet rs = stmt.executeQuery(sql);
           ResultSetMetaData meta = rs.getMetaData();
           int numberOfColumns = meta.getColumnCount();
+//          DefaultTableModel model= (DefaultTableModel) jTable1.getModel();
           jScrollPane1.repaint();        
           while (rs.next()){
+              System.out.println("abc");
               Object [] rowData = new Object[numberOfColumns];
              for (int i=0; i<rowData.length; ++i){
                   rowData[i]=rs.getObject(i+1);
@@ -387,12 +447,12 @@ public class View_POIs extends javax.swing.JFrame {
         } catch (ParseException ex) {
             Logger.getLogger(View_POIs.class.getName()).log(Level.SEVERE, null,ex);
         }  
+  
     }//GEN-LAST:event_jButton3ActionPerformed
 
-    private void jComboBox2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox2ActionPerformed
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jComboBox2ActionPerformed
-
+    }//GEN-LAST:event_jButton5ActionPerformed
 
     
     /**
@@ -436,6 +496,7 @@ public class View_POIs extends javax.swing.JFrame {
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton5;
     private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JComboBox<String> jComboBox2;

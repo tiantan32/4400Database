@@ -3,7 +3,21 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package GUI1;
+package phase3;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.Statement;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -39,27 +53,59 @@ public class Pending_data extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Lucida Grande", 0, 24)); // NOI18N
         jLabel1.setText("Pending data points");
 
+        jTable1.setAutoCreateRowSorter(true);
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null}
+                
             },
             new String [] {
                 "Select", "POI location", "Data type", "Data value", "Time&date of data reading"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Boolean.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class
+            	java.lang.Boolean.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, 
             };
 
             public Class getColumnClass(int columnIndex) {
                 return types [columnIndex];
             }
         });
+        
+        // TODO add your handling code here:
+		DefaultTableModel model=(DefaultTableModel) jTable1.getModel();
+		while(model.getRowCount()>0){
+		      model.setRowCount(0);
+		} 
+
+        try {
+		  Connection conn = null;
+		  conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/javabase",  "root", "123");
+		  System.out.println(conn.toString());
+		  Statement stmt = conn.createStatement();
+		  String sql = "SELECT POIlocation, DataType, DataValue, DateTime FROM DATAPOINT WHERE Accepted = 0";
+		  
+		  System.out.println("query: " + sql );
+		  ResultSet rs = stmt.executeQuery(sql);
+		  ResultSetMetaData meta = rs.getMetaData();
+		  int numberOfColumns = meta.getColumnCount();
+//          DefaultTableModel model= (DefaultTableModel) jTable1.getModel();
+        jScrollPane1.repaint();        
+        while (rs.next()){
+		  System.out.println("abc");
+		  Object [] rowData = new Object[numberOfColumns+1];
+		 for (int i=1; i<rowData.length; ++i){
+		      rowData[i]=rs.getObject(i);
+		  }
+		  model.addRow(rowData);
+		  System.out.println(rowData);
+        }  
+        model.fireTableDataChanged();
+        jTable1.setModel(model);
+        
+        conn.close();
+        } catch (Exception ex) {
+		  JOptionPane.showMessageDialog(this,"Error in connectivity" );
+        } 
         jScrollPane1.setViewportView(jTable1);
 
         jButton1.setText("Back");
@@ -114,6 +160,9 @@ public class Pending_data extends javax.swing.JFrame {
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         // TODO add your handling code here:
+        System.out.println(jTable1.getModel().getValueAt(0,0));
+        
+        
     }//GEN-LAST:event_jButton3ActionPerformed
 
     /**

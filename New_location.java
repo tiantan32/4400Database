@@ -3,14 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package GUI1;
+package phase3;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.sql.Timestamp;
-import java.util.Date;
+import java.util.ArrayList;
+
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 /**
@@ -22,6 +23,10 @@ public class New_location extends javax.swing.JFrame {
     /**
      * Creates new form New_location
      */
+	
+	private ArrayList<String> cityNames = new ArrayList<String>();
+	private ArrayList<String> stateNames = new ArrayList<String>();
+	
     public New_location() {
         initComponents();
     }
@@ -46,17 +51,30 @@ public class New_location extends javax.swing.JFrame {
         jTextField2 = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
+        
+        try {
+            Connection conn = null;
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/javabase",  "root", "123");
+            System.out.println(conn.toString());
+            Statement stmt = conn.createStatement();
+            String sql = "SELECT * FROM CITYSTATE;"; // populates the city and state dropdowns
+            System.out.println("query: " + sql );
+            ResultSet rs = stmt.executeQuery(sql);
+            while (rs.next()) {
+            	String city = rs.getString("City");
+            	String state = rs.getString("State");
+            	cityNames.add(city);
+            	stateNames.add(state);
+            }
+            conn.close();
+            } catch (Exception ex) {
+            	JOptionPane.showMessageDialog(this,"Error in connectivity" );
+        }
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jLabel1.setFont(new java.awt.Font("Lucida Grande", 0, 24)); // NOI18N
         jLabel1.setText("Add a new location");
-
-        jTextField1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField1ActionPerformed(evt);
-            }
-        });
 
         jLabel2.setText("POI location name:");
 
@@ -65,28 +83,26 @@ public class New_location extends javax.swing.JFrame {
         jLabel4.setText("State:");
 
         jLabel5.setText("Zip Code:");
+        
+        String[] cities = new String[cityNames.size()];
+        for (int i = 0; i<cityNames.size(); i++) {
+        	cities[i] = cityNames.get(i);
+        }
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(cities));
+        
+        String[] states = new String[stateNames.size()];
+        for (int i = 0; i<stateNames.size(); i++) {
+        	states[i] = stateNames.get(i);
+        }
+        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(states));
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        jComboBox1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jComboBox1ActionPerformed(evt);
-            }
-        });
-
-        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Alabama ", "Alaska ", "Arizona ", "Arkansas ", "California ", "Colorado ", "Connecticut ", "Delaware ", "Florida ", "Georgia ", "Hawaii ", "Idaho ", "Illinois Indiana ", "Iowa ", "Kansas ", "Kentucky ", "Louisiana ", "Maine ", "Maryland ", "Massachusetts ", "Michigan ", "Minnesota ", "Mississippi ", "Missouri ", "Montana Nebraska ", "Nevada ", "New Hampshire ", "New Jersey ", "New Mexico ", "New York ", "North Carolina ", "North Dakota ", "Ohio ", "Oklahoma ", "Oregon ", "Pennsylvania Rhode Island ", "South Carolina ", "South Dakota ", "Tennessee ", "Texas ", "Utah ", "Vermont ", "Virginia ", "Washington ", "West Virginia ", "Wisconsin ", "Wyoming", " " }));
-        jComboBox2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jComboBox2ActionPerformed(evt);
-            }
-        });
-
-        jTextField2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField2ActionPerformed(evt);
-            }
-        });
 
         jButton1.setText("Back");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         jButton2.setText("Submit");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
@@ -156,86 +172,82 @@ public class New_location extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField1ActionPerformed
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {
+    	this.dispose();
+    	try {
+          for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+              if ("Nimbus".equals(info.getName())) {
+                  javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                  break;
+              }
+          }
+      } catch (ClassNotFoundException ex) {
+          java.util.logging.Logger.getLogger(ScientistFunctionality.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+      } catch (InstantiationException ex) {
+          java.util.logging.Logger.getLogger(ScientistFunctionality.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+      } catch (IllegalAccessException ex) {
+          java.util.logging.Logger.getLogger(ScientistFunctionality.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+      } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+          java.util.logging.Logger.getLogger(ScientistFunctionality.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+      }
+      //</editor-fold>
 
-    private void jTextField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField2ActionPerformed
-
-    private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jComboBox1ActionPerformed
-
-    private void jComboBox2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jComboBox2ActionPerformed
-
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
-          String poilocation = jTextField1.getText();
-          String city = jComboBox1.getSelectedItem().toString();
-          String state = jComboBox2.getSelectedItem().toString();
-          String zipcode = jTextField2.getText();
-          try {
+      /* Create and display the form */
+      java.awt.EventQueue.invokeLater(new Runnable() {
+          public void run() {
+              new ScientistFunctionality().setVisible(true);
+          }
+      });
+    }
+    
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {
+    	String name = jTextField1.getText();
+    	String city = jComboBox1.getSelectedItem().toString();
+    	String state = jComboBox2.getSelectedItem().toString();
+    	String zip = jTextField2.getText();
+    	try {
             Connection conn = null;
             conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/javabase",  "root", "123");
             System.out.println(conn.toString());
             Statement stmt = conn.createStatement();
-            String sql = "INSERT INTO POI (Location, Zipcode, City, State) VALUES('"+poilocation+"','"+ zipcode +"','"+city+"','"+state+"');";
+            String sql = "INSERT INTO POI (Location, Zipcode, City, State) VALUES('"+name+"','"+zip+"','"+city+"','"+state+"');";
             System.out.println("query: " + sql );
-//            String sql2 = "SELECT * FROM CITYSTATE";
-//            ResultSet rs = stmt.executeQuery(sql2);
-//            if (rs.next()) {
-//                System.out.println(rs.getString(0));
-//            }
-//            System.out.println("query: " + sql2 );
-            stmt.executeUpdate(sql); 
-                                 
+            try {
+            	 stmt.executeUpdate(sql); 
+            } catch(Exception ex) {
+            	JOptionPane.showMessageDialog(new JFrame(),this,"Error in inputing data", JOptionPane.ERROR_MESSAGE);
+            	return;
+            }                               
             conn.close();
             } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this,"Error in connectivity" );
-        }  
-        
-        
-        
-        
-    }//GEN-LAST:event_jButton2ActionPerformed
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
+             JOptionPane.showMessageDialog(this,"Location already exists" );
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(New_location.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(New_location.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(New_location.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(New_location.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
+    	try {
+          for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+              if ("Nimbus".equals(info.getName())) {
+                  javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                  break;
+              }
+          }
+      } catch (ClassNotFoundException ex) {
+          java.util.logging.Logger.getLogger(ScientistFunctionality.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+      } catch (InstantiationException ex) {
+          java.util.logging.Logger.getLogger(ScientistFunctionality.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+      } catch (IllegalAccessException ex) {
+          java.util.logging.Logger.getLogger(ScientistFunctionality.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+      } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+          java.util.logging.Logger.getLogger(ScientistFunctionality.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+      }
+      //</editor-fold>
 
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new New_location().setVisible(true);
-            }
-        });
+      /* Create and display the form */
+      java.awt.EventQueue.invokeLater(new Runnable() {
+          public void run() {
+              new ScientistFunctionality().setVisible(true);
+          }
+      });
+      
+      this.dispose();
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
