@@ -162,14 +162,19 @@ public class New_datapoint extends javax.swing.JFrame {
           try {                                         
               // TODO add your handling code here:
         String poilocation = jComboBox1.getSelectedItem().toString();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        Date date = dateChooserCombo1.getSelectedDate().getTime();
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yy hh:mm");
+//        Date date = dateChooserCombo1.getSelectedDate().getTime();
+        String date = dateChooserCombo1.getText();
 //          Timestamp ts = new Timestamp(date.getTime());
 //          java.util.Date dt = ts;
-        String str = sdf.format(date);
-        System.out.println(str);
-        java.util.Date st = sdf.parse(str);
-        java.sql.Date sqldate = new java.sql.Date(st.getTime());
+        String minutes = jFormattedTextField1.getText();
+        String datemin = date + " " + minutes;
+        System.out.println(datemin);
+//        String str = sdf.format(datemin);
+        java.util.Date st = sdf.parse(datemin);
+        System.out.println(st);
+        java.sql.Timestamp sqldate = new java.sql.Timestamp(st.getTime());
+        
         //          String datatype = jComboBox2.getSelectedItem().toString();
         String datatype = "Mold";
         String datavalue = jTextField1.getText();
