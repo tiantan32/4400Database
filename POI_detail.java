@@ -31,9 +31,13 @@ public class POI_detail extends javax.swing.JFrame {
      * Creates new form POI_detail
      */
 	private ArrayList<String> dataType = new ArrayList<String>();
+	static private ArrayList<String> key = new ArrayList<String>();
+	private String str = "";
 	
-    public POI_detail() {
+    public POI_detail(ArrayList<String> key) {
+    	this.key = key;
         initComponents();
+        str = key.get(0);
     }
 
     /**
@@ -44,7 +48,6 @@ public class POI_detail extends javax.swing.JFrame {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
-
         jLabel7 = new javax.swing.JLabel();
         jSeparator1 = new javax.swing.JSeparator();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -287,6 +290,28 @@ public class POI_detail extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         //Back:
+    	this.dispose();
+    	try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(View_POIs.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(View_POIs.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(View_POIs.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(View_POIs.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new View_POIs().setVisible(true);
+            }
+        });
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
@@ -298,7 +323,6 @@ public class POI_detail extends javax.swing.JFrame {
             } 
             
             String datatype = jComboBox1.getSelectedItem().toString();
-//            datatype = "Mold";
             String datavalue1 = jTextField1.getText();
             String datavalue2 = jTextField2.getText();
             int value1 = 0;
@@ -326,7 +350,7 @@ public class POI_detail extends javax.swing.JFrame {
               conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/javabase",  "root", "123");
               System.out.println(conn.toString());
 //              Statement stmt = conn.createStatement();
-              PreparedStatement ps = conn.prepareStatement( "SELECT datatype, datavalue,datetime FROM DATAPOINT WHERE DataType LIKE '"+datatype+"' AND DateTime Between '"+sqlStartDate+"' AND '"+sqlEndDate+"' AND DataValue BETWEEN ? AND ?;");
+              PreparedStatement ps = conn.prepareStatement( "SELECT datatype, datavalue,datetime FROM DATAPOINT WHERE DataType LIKE '"+datatype+"' AND DateTime Between '"+sqlStartDate+"' AND '"+sqlEndDate+"' AND DataValue BETWEEN ? AND ? AND Accepted = 1;");
               ps.setInt(1, value1);
               ps.setInt(2, value2);
               ResultSet rs = ps.executeQuery();
@@ -383,7 +407,7 @@ public class POI_detail extends javax.swing.JFrame {
         try {                                         
             // flag:
             String datatype = jComboBox1.getSelectedItem().toString();
-            datatype = "Mold";
+            
             String datavalue1 = jTextField1.getText();
             String datavalue2 = jTextField2.getText();
             int value1 = 0;
@@ -411,9 +435,10 @@ public class POI_detail extends javax.swing.JFrame {
                 conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/javabase",  "root", "123");
                 System.out.println(conn.toString());
                 Statement stmt = conn.createStatement();
-                PreparedStatement ps = conn.prepareStatement( "SELECT * FROM DATAPOINT, POI WHERE DataType LIKE '"+datatype+"' AND DateTime Between '"+sqlStartDate+"' AND '"+sqlEndDate+"' AND DataValue BETWEEN ? AND ? AND POIlocation = Location;");
+                PreparedStatement ps = conn.prepareStatement( "SELECT * FROM DATAPOINT WHERE DataType LIKE '"+datatype+"' AND DateTime Between '"+sqlStartDate+"' AND '"+sqlEndDate+"' AND DataValue BETWEEN ? AND ? AND POIlocation = '"+str+"';");
                 ps.setInt(1, value1);
                 ps.setInt(2, value2);
+                System.out.println(ps);
                 ResultSet rs = ps.executeQuery();
                 while(rs.next()){
                     SimpleDateFormat Format = new SimpleDateFormat("yyyy-MM-dd");
@@ -422,28 +447,37 @@ public class POI_detail extends javax.swing.JFrame {
                     System.out.println(current);
                     java.util.Date currenttime = sdf.parse(current);
                     java.sql.Date dateflagged = new java.sql.Date(currenttime.getTime());
-                    String flagged = rs.getString("Flagged");
-                    String location = rs.getString("Location");
-                    int flag = Integer.parseInt(flagged);
-                    flag = 1-flag;
-                    if (flag==0){
-                        Boolean flags = false;
-                        PreparedStatement ps2 = conn.prepareStatement( "UPDATE POI SET Flagged=?, DateFlagged = NULL WHERE Location = '"+ location+"';");
-                        ps2.setBoolean(1, flags);
-                        System.out.println(ps2.toString());
-                        ps2.executeUpdate();
-                    } else {
-                        Boolean flags = true;
-                        PreparedStatement ps3 = conn.prepareStatement("UPDATE POI SET Flagged=?, DateFlagged = ? WHERE Location = '"+ location+"';");
-                        ps3.setBoolean(1, flags);
-                        ps3.setDate(2, dateflagged);
-                        System.out.println(ps3.toString());
-                        ps3.executeUpdate();
+                    String location = rs.getString("POILocation");
+                    System.out.println(location);
+                    String sql = "SELECT * FROM POI WHERE Location ='"+location +"';";
+                    System.out.println(sql);
+                    stmt = conn.createStatement();
+                    ResultSet newrs = stmt.executeQuery(sql);
+                    while(newrs.next()) {
+                    	String flagged = newrs.getString("Flagged");
+                        System.out.println(flagged);
+                        int flag = Integer.parseInt(flagged);
+                        flag = 1-flag;
+                        if (flag==0){
+                            Boolean flags = false;
+                            PreparedStatement ps2 = conn.prepareStatement( "UPDATE POI SET Flagged=?, DateFlagged = NULL WHERE Location = '"+ location+"';");
+                            ps2.setBoolean(1, flags);
+                            System.out.println(ps2.toString());
+                            ps2.executeUpdate();
+                        } else {
+                            Boolean flags = true;
+                            PreparedStatement ps3 = conn.prepareStatement("UPDATE POI SET Flagged=?, DateFlagged = ? WHERE Location = '"+ location+"';");
+                            ps3.setBoolean(1, flags);
+                            ps3.setDate(2, dateflagged);
+                            System.out.println(ps3.toString());
+                            ps3.executeUpdate();
+                        }
                     }
+                         
                 }
 
                 
-                stmt.close();
+               stmt.close();
                 conn.close();
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this,"Error in connectivity" );
@@ -487,7 +521,7 @@ public class POI_detail extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new POI_detail().setVisible(true);
+                new POI_detail(key).setVisible(true);
             }
         });
     }

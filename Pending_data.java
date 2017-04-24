@@ -12,6 +12,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -23,11 +24,15 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author Yang-mac
  */
+
 public class Pending_data extends javax.swing.JFrame {
 
     /**
      * Creates new form Pending_data
      */
+	
+	private ArrayList<String> selected = new ArrayList<String>();
+	
     public Pending_data() {
         initComponents();
     }
@@ -82,7 +87,7 @@ public class Pending_data extends javax.swing.JFrame {
 		  conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/javabase",  "root", "123");
 		  System.out.println(conn.toString());
 		  Statement stmt = conn.createStatement();
-		  String sql = "SELECT POIlocation, DataType, DataValue, DateTime FROM DATAPOINT WHERE Accepted = 0";
+		  String sql = "SELECT POIlocation, DataType, DataValue, DateTime FROM DATAPOINT WHERE Accepted IS NULL";
 		  
 		  System.out.println("query: " + sql );
 		  ResultSet rs = stmt.executeQuery(sql);
@@ -109,8 +114,19 @@ public class Pending_data extends javax.swing.JFrame {
         jScrollPane1.setViewportView(jTable1);
 
         jButton1.setText("Back");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
 
         jButton2.setText("Reject");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         jButton3.setText("Accept");
         jButton3.addActionListener(new java.awt.event.ActionListener() {
@@ -157,12 +173,154 @@ public class Pending_data extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+    
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {
+    	this.dispose();
+    	try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(AdminFunctionality.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(AdminFunctionality.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(AdminFunctionality.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(AdminFunctionality.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new AdminFunctionality().setVisible(true);
+            }
+        });
+    }
+    
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {
+    	int rownum = jTable1.getRowCount();
+        for (int j = 0; j<rownum;j++) {
+      	  Object temp = jTable1.getModel().getValueAt(j,0);
+      	  System.out.println(temp);
+      	  if (temp!=null) {  
+          	  selected.add("'" +jTable1.getModel().getValueAt(j,1).toString()+"'" + ","+"'"+jTable1.getModel().getValueAt(j,4).toString().substring(0,19)+"'");
+          	  System.out.println(selected.toString());
+      	  }
+        }
+        String str = "";
+        for (int i=0;i<selected.size();i++) {
+        	if (i==selected.size()-1) {
+        		String temp = "'" +selected.get(i)+ "'";
+        		str+=temp;
+        		break;
+        	}
+        	String temp = "'" +selected.get(i)+ "', ";
+        	str += temp;
+        }
+        System.out.println(str);
+        try {
+            Connection conn = null;
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/javabase",  "root", "123");
+            System.out.println(conn.toString());
+            Statement stmt = conn.createStatement();
+            for (int i = 0; i<selected.size();i++) {
+            	String sql = "UPDATE DATAPOINT SET Accepted = 0 WHERE (poilocation, DateTime) = ("+ selected.get(i) +") and Accepted IS NULL;";
+            	stmt.executeUpdate(sql);
+            }
+            //String sql = "UPDATE DATAPOINT SET Accepted = 0 WHERE poilocation = ("+ str +") and Accepted IS NULL;";
+        	// populates the city and state dropdowns
+            //System.out.println("query: " + sql );
+           // stmt.executeUpdate(sql);
+            conn.close();
+            } catch (Exception ex) {
+            	JOptionPane.showMessageDialog(this,"Error in connectivity" );
+        }
+        this.dispose();
+    	try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(Pending_data.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(Pending_data.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(Pending_data.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(Pending_data.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new Pending_data().setVisible(true);
+            }
+        });
+    }
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        // TODO add your handling code here:
-        System.out.println(jTable1.getModel().getValueAt(0,0));
-        
-        
+    	int rownum = jTable1.getRowCount();
+        for (int j = 0; j<rownum;j++) {
+      	  Object temp = jTable1.getModel().getValueAt(j,0);
+      	  System.out.println(temp);
+      	  if (temp!=null) {  
+          	  selected.add("'" +jTable1.getModel().getValueAt(j,1).toString()+"'" + ","+"'"+jTable1.getModel().getValueAt(j,4).toString().substring(0,19)+"'");
+      	  System.out.println(selected.toString());
+      	  }
+        }
+        String str = "";
+        for (int i=0;i<selected.size();i++) {
+        	if (i==selected.size()-1) {
+        		String temp = "'" +selected.get(i)+ "'";
+        		str+=temp;
+        		break;
+        	}
+        	String temp = "'" +selected.get(i)+ "', ";
+        	str += temp;
+        }
+        try {
+            Connection conn = null;
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/javabase",  "root", "123");
+            System.out.println(conn.toString());
+            Statement stmt = conn.createStatement();
+            for (int i = 0; i<selected.size();i++) {
+            	String sql = "UPDATE DATAPOINT SET Accepted = 1 WHERE (poilocation, DateTime) = ("+ selected.get(i) +") and Accepted IS NULL;";
+            	System.out.println("query: " + sql );
+            	stmt.executeUpdate(sql);
+            }
+            //String sql = "UPDATE DATAPOINT SET Accepted = 1 WHERE poilocation = ("+ str +") and Accepted IS NULL;";
+        	// populates the city and state dropdowns
+            //System.out.println("query: " + sql );
+            //stmt.executeUpdate(sql);
+            conn.close();
+            } catch (Exception ex) {
+            	JOptionPane.showMessageDialog(this,"Error in connectivity" );
+        }
+        this.dispose();
+    	try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(Pending_data.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(Pending_data.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(Pending_data.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(Pending_data.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new Pending_data().setVisible(true);
+            }
+        });
     }//GEN-LAST:event_jButton3ActionPerformed
 
     /**

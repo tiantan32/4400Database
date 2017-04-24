@@ -5,6 +5,16 @@
  */
 package phase3;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.Statement;
+import java.util.ArrayList;
+
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author Yang-mac
@@ -14,6 +24,8 @@ public class Pending_official extends javax.swing.JFrame {
     /**
      * Creates new form Pending_official
      */
+	private ArrayList<String> selected = new ArrayList<String>();
+	
     public Pending_official() {
         initComponents();
     }
@@ -59,9 +71,72 @@ public class Pending_official extends javax.swing.JFrame {
                 return types [columnIndex];
             }
         });
+        
+        DefaultTableModel model=(DefaultTableModel) jTable1.getModel();
+		while(model.getRowCount()>0){
+		      model.setRowCount(0);
+		} 
+
+        try {
+		  Connection conn = null;
+		  conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/javabase",  "root", "123");
+		  System.out.println(conn.toString());
+		  Statement stmt = conn.createStatement();
+		  String sql = "SELECT CITYOFFICIAL.Username, Email_Address, City, State, Title FROM CITYOFFICIAL,USER WHERE Approved IS NULL AND USER.Username=CITYOFFICIAL.Username";
+		  System.out.println("query: " + sql );
+		  ResultSet rs = stmt.executeQuery(sql);
+		  ResultSetMetaData meta = rs.getMetaData();
+		  int numberOfColumns = meta.getColumnCount();
+//          DefaultTableModel model= (DefaultTableModel) jTable1.getModel();
+        jScrollPane1.repaint();        
+        while (rs.next()){
+		  System.out.println("abc");
+		  Object [] rowData = new Object[numberOfColumns+1];
+		 for (int i=1; i<rowData.length; ++i){
+		      rowData[i]=rs.getObject(i);
+		  }
+		  model.addRow(rowData);
+		  System.out.println(rowData);
+        }  
+        model.fireTableDataChanged();
+        jTable1.setModel(model);
+        
+        conn.close();
+        } catch (Exception ex) {
+		  JOptionPane.showMessageDialog(this,"Error in connectivity" );
+        } 
         jScrollPane1.setViewportView(jTable1);
 
         jButton1.setText("Back");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+
+        jButton2.setText("Reject");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
+        jButton3.setText("Accept");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+        
+        jScrollPane1.setViewportView(jTable1);
+
+        jButton1.setText("Back");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         jButton2.setText("Reject");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
@@ -115,13 +190,151 @@ public class Pending_official extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+    
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {
+    	this.dispose();
+    	try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(AdminFunctionality.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(AdminFunctionality.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(AdminFunctionality.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(AdminFunctionality.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new AdminFunctionality().setVisible(true);
+            }
+        });
+    }
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
+    	int rownum = jTable1.getRowCount();
+        for (int j = 0; j<rownum;j++) {
+      	  Object temp = jTable1.getModel().getValueAt(j,0);
+      	  System.out.println(temp);
+      	  if (temp!=null) {  
+      	  selected.add(jTable1.getModel().getValueAt(j,1).toString());
+      	  System.out.println(selected.toString());
+      	  }
+        }
+//        String str = "";
+//        for (int i=0;i<selected.size();i++) {
+//        	if (i==selected.size()-1) {
+//        		String temp = "'" +selected.get(i)+ "'";
+//        		str+=temp;
+//        		break;
+//        	}
+//        	String temp = "'" +selected.get(i)+ "', ";
+//        	str += temp;
+//        }
+        try {
+            Connection conn = null;
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/javabase",  "root", "123");
+            System.out.println(conn.toString());
+            Statement stmt = conn.createStatement();
+            for (int i=0;i<selected.size();i++) {
+                String sql = "UPDATE CITYOFFICIAL SET Approved = 0 WHERE Username = ("+ selected.get(i) +") and Approved IS NULL;";
+                stmt.executeUpdate(sql);
+            }
+        	// populates the city and state dropdowns
+            //System.out.println("query: " + sql );
+            conn.close();
+            } catch (Exception ex) {
+            	JOptionPane.showMessageDialog(this,"Error in connectivity" );
+        }
+        this.dispose();
+    	try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(Pending_official.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(Pending_official.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(Pending_official.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(Pending_official.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new Pending_official().setVisible(true);
+            }
+        });
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        // TODO add your handling code here:
+    	int rownum = jTable1.getRowCount();
+        for (int j = 0; j<rownum;j++) {
+      	  Object temp = jTable1.getModel().getValueAt(j,0);
+      	  System.out.println(temp);
+      	  if (temp!=null) {  
+      		  selected.add("'"+jTable1.getModel().getValueAt(j,1).toString()+"'");
+      		  System.out.println(selected.toString());
+      	  }
+        }
+//        String str = "";
+//        for (int i=0;i<selected.size();i++) {
+//        	if (i==selected.size()-1) {
+//        		String temp = "'" +selected.get(i)+ "'";
+//        		str+=temp;
+//        		break;
+//        	}
+//        	String temp = "'" +selected.get(i)+ "', ";
+//        	str += temp;
+//        }
+        try {
+            Connection conn = null;
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/javabase",  "root", "123");
+            System.out.println(conn.toString());
+            Statement stmt = conn.createStatement();
+            for (int i=0; i<selected.size();i++) {
+                String sql = "UPDATE CITYOFFICIAL SET Approved = 1 WHERE Username = "+ selected.get(i) +" and Approved IS NULL;";
+                System.out.println(sql);
+                stmt.executeUpdate(sql);
+            }
+            //String sql = "UPDATE CITYOFFICIAL SET Approved = 1 WHERE Username = ("+ str +") and Approved IS NULL;";
+        	// populates the city and state dropdowns
+           // System.out.println("query: " + sql );
+            //stmt.executeUpdate(sql);
+            conn.close();
+            } catch (Exception ex) {
+            	JOptionPane.showMessageDialog(this,"Error in connectivity" );
+        }
+        this.dispose();
+    	try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(Pending_official.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(Pending_official.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(Pending_official.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(Pending_official.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new Pending_official().setVisible(true);
+            }
+        });
     }//GEN-LAST:event_jButton3ActionPerformed
 
     /**

@@ -328,6 +328,7 @@ public class New_User extends javax.swing.JFrame {
     		if (city.equals("") || state.equals("") || title.equals("")) {
     			JOptionPane.showMessageDialog(new JFrame(), "Please fill in all fields inside the box", "Error Message", JOptionPane.ERROR_MESSAGE);
     			success = false;
+    			return;
     		}
     	}
     	
@@ -349,9 +350,14 @@ public class New_User extends javax.swing.JFrame {
                     System.out.println("query: " + sql2);
                     stmt.executeUpdate(sql2);
                 }
+                if (usrType.equals("CityScientist")&&!title.equals("")) {
+                	JOptionPane.showMessageDialog(this,"Please do not fille in the box area" );        			
+                	return;
+                }
                 conn.close();
                 } catch (Exception ex) {
                  JOptionPane.showMessageDialog(this,"Error in connectivity" );
+                 return;
             }
     		
 			JOptionPane.showMessageDialog(new JFrame(), "Your account has been created!");

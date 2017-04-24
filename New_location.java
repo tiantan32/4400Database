@@ -205,6 +205,10 @@ public class New_location extends javax.swing.JFrame {
     	String city = jComboBox1.getSelectedItem().toString();
     	String state = jComboBox2.getSelectedItem().toString();
     	String zip = jTextField2.getText();
+    	if (name.equals("")||city.equals("")||state.equals("")||zip.equals("")) {
+    		JOptionPane.showMessageDialog(this,"Missing Data" );
+    		return;
+    	}
     	try {
             Connection conn = null;
             conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/javabase",  "root", "123");

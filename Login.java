@@ -233,7 +233,7 @@ public class Login extends javax.swing.JFrame {
                 } else if (loginpassword.equals(password) && UserType.equals("CityOfficial")) {
                 	JOptionPane.showMessageDialog(this, "Welcome " + loginusername + ", " + "You have logged in as City Official");
                 	res = "official"; 
-                } else if (loginpassword.equals(password) && UserType.equals("Admin")) {
+                } else if (loginpassword.equals(password) && UserType.equals("admin")) {
                 	JOptionPane.showMessageDialog(this, "Welcome " + loginusername + ", " + "You have logged in as Admin");
                 	res = "admin";
                 }

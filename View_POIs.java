@@ -18,6 +18,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
@@ -35,6 +37,7 @@ public class View_POIs extends javax.swing.JFrame {
 	private ArrayList<String> cityNames = new ArrayList<String>();
 	private ArrayList<String> stateNames = new ArrayList<String>();
 	private ArrayList<String> poi = new ArrayList<String>();
+	private ArrayList<String> selected = new ArrayList<String>();
 	
 
     public View_POIs() {
@@ -72,7 +75,38 @@ public class View_POIs extends javax.swing.JFrame {
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
         jButton5 = new javax.swing.JButton();
-
+        
+        dateChooserCombo1.setEnabled(false);
+		dateChooserCombo2.setEnabled(false);
+        
+        cityNames.add("Not Selected");
+        stateNames.add("Not Selected");
+        poi.add("Not Selected");
+        try {
+            Connection conn = null;
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/javabase",  "root", "123");
+            System.out.println(conn.toString());
+            Statement stmt = conn.createStatement();
+            String sql = "SELECT * FROM CITYSTATE;"; // populates the city and state dropdowns
+            String sql1 = "SELECT * FROM POI;";
+            System.out.println("query: " + sql );
+            ResultSet rs = stmt.executeQuery(sql);
+            while (rs.next()) {
+            	String city = rs.getString("City");
+            	String state = rs.getString("State");
+            	cityNames.add(city);
+            	stateNames.add(state);
+            }
+            rs = stmt.executeQuery(sql1);
+            while(rs.next()) {
+            	String poi1 = rs.getString("Location");
+            	poi.add(poi1);
+            }
+            conn.close();
+            } catch (Exception ex) {
+            	JOptionPane.showMessageDialog(this,"Error in connectivity" );
+        }
+        
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jLabel1.setFont(new java.awt.Font("Lucida Grande", 0, 24)); // NOI18N
@@ -83,36 +117,44 @@ public class View_POIs extends javax.swing.JFrame {
 
             },
             new String [] {
-                "Location Name", "Date Flagged", "Flagged? ", "Zipcode", "City", "State"
+                "Select","Location Name", "Date Flagged", "Flagged? ", "Zipcode", "City", "State"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.Boolean.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+            		java.lang.Boolean.class, java.lang.String.class, java.lang.String.class, java.lang.Boolean.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
-            boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false
+            boolean[] canEdit = new boolean[] {
+            		true, false,false,false,false,false,false
             };
 
             public Class getColumnClass(int columnIndex) {
                 return types [columnIndex];
             }
-
+            
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
             }
+            
         });
         jTable1.getTableHeader().setReorderingAllowed(false);
         jScrollPane1.setViewportView(jTable1);
         if (jTable1.getColumnModel().getColumnCount() > 0) {
-            jTable1.getColumnModel().getColumn(0).setHeaderValue("Location Name");
-            jTable1.getColumnModel().getColumn(1).setHeaderValue("Date Flagged");
-            jTable1.getColumnModel().getColumn(2).setHeaderValue("Flagged");
-            jTable1.getColumnModel().getColumn(3).setHeaderValue("Zip code");
-            jTable1.getColumnModel().getColumn(4).setHeaderValue("City");
-            jTable1.getColumnModel().getColumn(5).setHeaderValue("State");
+        	jTable1.getColumnModel().getColumn(0).setHeaderValue("Select");
+            jTable1.getColumnModel().getColumn(1).setHeaderValue("Location Name");
+            jTable1.getColumnModel().getColumn(2).setHeaderValue("Date Flagged");
+            jTable1.getColumnModel().getColumn(3).setHeaderValue("Flagged");
+            jTable1.getColumnModel().getColumn(4).setHeaderValue("Zip code");
+            jTable1.getColumnModel().getColumn(5).setHeaderValue("City");
+            jTable1.getColumnModel().getColumn(6).setHeaderValue("State");
         }
 
         jButton1.setText("Back");
+        jButton5.setText("Show Results");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         jLabel2.setText("POI location Name");
 
@@ -125,17 +167,25 @@ public class View_POIs extends javax.swing.JFrame {
         jLabel6.setText("Flagged?");
 
         jLabel7.setText("Date Flagged");
+        
+        String[] poiName = new String[poi.size()];
+        for (int i = 0; i<poi.size(); i++) {
+        	poiName[i] = poi.get(i);
+        }
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(poiName));
+        
+        String[] cities = new String[cityNames.size()];
+        for (int i = 0; i<cityNames.size(); i++) {
+        	cities[i] = cityNames.get(i);
+        }
+        jComboBox3.setModel(new javax.swing.DefaultComboBoxModel<>(cities));
+        
+        String[] states = new String[stateNames.size()];
+        for (int i = 0; i<stateNames.size(); i++) {
+        	states[i] = stateNames.get(i);
+        }
+        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(states));
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-
-        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Not Selected", "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming", " " }));
-        jComboBox2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                // jComboBox2ActionPerformed(evt);
-            }
-        });
-
-        jComboBox3.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Not Selected", "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         jCheckBox1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -427,18 +477,19 @@ public class View_POIs extends javax.swing.JFrame {
           ResultSetMetaData meta = rs.getMetaData();
           int numberOfColumns = meta.getColumnCount();
 //          DefaultTableModel model= (DefaultTableModel) jTable1.getModel();
-          jScrollPane1.repaint();        
-          while (rs.next()){
+          jScrollPane1.repaint();     
+          while (rs.next()){      	  
               System.out.println("abc");
-              Object [] rowData = new Object[numberOfColumns];
-             for (int i=0; i<rowData.length; ++i){
-                  rowData[i]=rs.getObject(i+1);
+              Object [] rowData = new Object[numberOfColumns+1];
+             for (int i=1; i<rowData.length; ++i){
+                  rowData[i]=rs.getObject(i);
               }
               model.addRow(rowData);
               System.out.println(rowData);
           }  
           model.fireTableDataChanged();
           jTable1.setModel(model);
+                 
           
           conn.close();
           } catch (Exception ex) {
@@ -449,10 +500,44 @@ public class View_POIs extends javax.swing.JFrame {
         }  
   
     }//GEN-LAST:event_jButton3ActionPerformed
+    
+    // on click of result
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    	int rownum = jTable1.getRowCount();
+        for (int j = 0; j<rownum;j++) {
+      	  Object temp = jTable1.getModel().getValueAt(j,0);
+      	  System.out.println(temp);
+      	  if (temp!=null) {  
+      	  selected.add(jTable1.getModel().getValueAt(j,1).toString());
+      	  System.out.println(selected.toString());
+      	  }
+        }
+        this.setVisible(false);
+    	try {
+          for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+              if ("Nimbus".equals(info.getName())) {
+                  javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                  break;
+              }
+          }
+      } catch (ClassNotFoundException ex) {
+          java.util.logging.Logger.getLogger(POI_detail.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+      } catch (InstantiationException ex) {
+          java.util.logging.Logger.getLogger(POI_detail.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+      } catch (IllegalAccessException ex) {
+          java.util.logging.Logger.getLogger(POI_detail.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+      } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+          java.util.logging.Logger.getLogger(POI_detail.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+      }
+      //</editor-fold>
 
-    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton5ActionPerformed
+      /* Create and display the form */
+      java.awt.EventQueue.invokeLater(new Runnable() {
+          public void run() {
+              new POI_detail(selected).setVisible(true);
+          }
+      });
+    }//GEN-LAST:event_jButton2ActionPerformed
 
     
     /**
